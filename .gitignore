@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build output
+dist/
+build/
+.vite/
+
+# Env files — never commit real credentials
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Supabase local
+supabase/.branches
+supabase/.temp
+
+# Editor / OS
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+*.log
+
+# Test output
+coverage/
