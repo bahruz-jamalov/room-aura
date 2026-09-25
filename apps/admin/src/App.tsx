@@ -9,6 +9,7 @@ import MenuScreen from "./screens/MenuScreen";
 import RequestsScreen from "./screens/RequestsScreen";
 import RoomsScreen from "./screens/RoomsScreen";
 import ServicesScreen from "./screens/ServicesScreen";
+import StaffScreen from "./screens/StaffScreen";
 
 export default function App() {
   return (
@@ -34,6 +35,14 @@ export default function App() {
               element={
                 <RequireCapability check={permissions.canManageRoomsAndDepartments}>
                   <RoomsScreen />
+                </RequireCapability>
+              }
+            />
+            <Route
+              path="/staff"
+              element={
+                <RequireCapability check={permissions.canManageStaff}>
+                  <StaffScreen />
                 </RequireCapability>
               }
             />
