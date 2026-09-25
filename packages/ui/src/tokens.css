@@ -1,0 +1,143 @@
+/*
+ * ROOM-AURA design tokens.
+ *
+ * One shared primitive layer (:root), two semantic skins on top of it:
+ *   [data-app="tourist"] — premium, warm, mobile-first, large touch targets
+ *   [data-app="admin"]   — professional, dense, desktop-first operations UI
+ *
+ * Each app's root element sets its own data-app attribute once; every
+ * component below that reads semantic tokens (--ra-color-*, --ra-radius-*)
+ * rather than primitives, so the same component code renders correctly in
+ * both skins without a fork. Dark mode is intentionally out of MVP scope —
+ * see docs/ARCHITECTURE.md section 10 (Nice to Have).
+ */
+
+:root {
+  /* Spacing scale (4px base) */
+  --ra-space-1: 4px;
+  --ra-space-2: 8px;
+  --ra-space-3: 12px;
+  --ra-space-4: 16px;
+  --ra-space-5: 20px;
+  --ra-space-6: 24px;
+  --ra-space-8: 32px;
+  --ra-space-10: 40px;
+  --ra-space-12: 48px;
+  --ra-space-16: 64px;
+
+  /* Radius scale */
+  --ra-radius-sm: 6px;
+  --ra-radius-md: 12px;
+  --ra-radius-lg: 20px;
+  --ra-radius-full: 999px;
+
+  /* Shadow scale */
+  --ra-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --ra-shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+  --ra-shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.14);
+
+  /* Type scale (mobile-first; admin dials the body size back down) */
+  --ra-text-xs: 12px;
+  --ra-text-sm: 14px;
+  --ra-text-base: 16px;
+  --ra-text-lg: 18px;
+  --ra-text-xl: 22px;
+  --ra-text-2xl: 28px;
+  --ra-text-3xl: 34px;
+
+  --ra-font-sans:
+    -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /* WCAG 2.1 AA target size, and the spec's own "large touch targets" principle */
+  --ra-touch-target: 48px;
+
+  /* Request/order status colors — one meaning everywhere, guest app and
+     admin alike. Keep in sync with packages/shared/src/request-state-machine.ts */
+  --ra-status-new: #64748b;
+  --ra-status-accepted: #6366f1;
+  --ra-status-in-progress: #f59e0b;
+  --ra-status-on-the-way: #06b6d4;
+  --ra-status-completed: #10b981;
+  --ra-status-cancelled: #ef4444;
+
+  --ra-z-nav: 100;
+  --ra-z-overlay: 200;
+  --ra-z-modal: 300;
+  --ra-z-toast: 400;
+}
+
+/* -----------------------------------------------------------------------
+   Tourist app — warm, premium, generous. Off-white paper background,
+   terracotta accent, soft large-radius cards.
+----------------------------------------------------------------------- */
+[data-app="tourist"] {
+  --ra-color-bg: #faf7f2;
+  --ra-color-surface: #ffffff;
+  --ra-color-surface-sunken: #f3ede4;
+  --ra-color-border: #e8ddcf;
+  --ra-color-text-primary: #2a2420;
+  --ra-color-text-secondary: #6b6055;
+  --ra-color-accent: #c1633d;
+  --ra-color-accent-contrast: #ffffff;
+  --ra-color-accent-soft: #f3e2d8;
+  --ra-color-success: #2f8f5b;
+  --ra-color-danger: #c94a3f;
+
+  --ra-radius-card: var(--ra-radius-lg);
+  --ra-radius-control: var(--ra-radius-md);
+  --ra-space-page-gutter: var(--ra-space-4);
+  --ra-text-body: var(--ra-text-base);
+  --ra-min-target: var(--ra-touch-target);
+}
+
+/* -----------------------------------------------------------------------
+   Admin app — professional, dense, desktop-first. Cool slate surfaces,
+   confident blue accent, tighter radius and spacing.
+----------------------------------------------------------------------- */
+[data-app="admin"] {
+  --ra-color-bg: #f4f6f8;
+  --ra-color-surface: #ffffff;
+  --ra-color-surface-sunken: #eef1f4;
+  --ra-color-border: #dde3ea;
+  --ra-color-text-primary: #1a2230;
+  --ra-color-text-secondary: #5b6675;
+  --ra-color-accent: #2454eb;
+  --ra-color-accent-contrast: #ffffff;
+  --ra-color-accent-soft: #e3eaff;
+  --ra-color-success: #128a4c;
+  --ra-color-danger: #d92d20;
+
+  --ra-radius-card: var(--ra-radius-sm);
+  --ra-radius-control: 8px;
+  --ra-space-page-gutter: var(--ra-space-6);
+  --ra-text-body: var(--ra-text-sm);
+  --ra-min-target: 36px;
+}
+
+/* RTL: components should prefer logical properties (margin-inline-start,
+   not margin-left) so most layout flips for free under dir="rtl". This
+   class covers the exception — a directional icon (e.g. a back chevron)
+   that logical properties don't handle on their own. */
+[dir="rtl"] .ra-flip-rtl {
+  transform: scaleX(-1);
+}
+
+html,
+body {
+  background: var(--ra-color-bg, #ffffff);
+  color: var(--ra-color-text-primary, #111111);
+}
+
+body {
+  margin: 0;
+  font-family: var(--ra-font-sans);
+  font-size: var(--ra-text-body, var(--ra-text-base));
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}

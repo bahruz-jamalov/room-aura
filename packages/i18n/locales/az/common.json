@@ -1,0 +1,84 @@
+{
+  "app": { "name": "ROOM-AURA" },
+  "nav": {
+    "home": "Ana səhifə",
+    "services": "Xidmətlər",
+    "myRequests": "Sorğularım",
+    "hotel": "Otel",
+    "settings": "Ayarlar"
+  },
+  "common": {
+    "send": "Göndər",
+    "cancel": "Ləğv et",
+    "confirm": "Təsdiqlə",
+    "back": "Geri",
+    "save": "Saxla",
+    "loading": "Yüklənir…",
+    "optional": "İstəyə bağlı",
+    "note": "Qeyd",
+    "minutes": "dəqiqə"
+  },
+  "onboarding": {
+    "chooseLanguage": "Dilinizi seçin",
+    "connectToHotel": "Otelə qoşulun",
+    "scanQr": "Otel/Otaq QR kodunu skan edin",
+    "enterCode": "Giriş kodunu daxil edin",
+    "connecting": "Qoşulur…",
+    "invalidCode": "Bu kod düzgün deyil. Zəhmət olmasa qəbulla əlaqə saxlayın."
+  },
+  "home": {
+    "welcomeTo": "Xoş gəldiniz",
+    "room": "Otaq",
+    "howCanWeHelp": "Sizə necə kömək edə bilərik?"
+  },
+  "request": {
+    "sendRequest": "Sorğu göndər",
+    "requestSent": "Sorğu göndərildi",
+    "estimatedDelivery": "Təxmini çatdırılma",
+    "quantity": "Miqdar",
+    "addNote": "Qeyd əlavə et (istəyə bağlı)",
+    "otherRequest": "Digər sorğu",
+    "whatDoYouNeed": "Nəyə ehtiyacınız var?",
+    "typeInYourLanguage": "Sorğunuzu öz dilinizdə yazın"
+  },
+  "status": {
+    "service": {
+      "new": "Sorğu qəbul edildi",
+      "accepted": "Qəbul edildi",
+      "in_progress": "İcra olunur",
+      "on_the_way": "Yoldadır",
+      "completed": "Tamamlandı",
+      "cancelled": "Ləğv edildi"
+    },
+    "order": {
+      "new": "Sifariş qəbul edildi",
+      "accepted": "Təsdiqləndi",
+      "in_progress": "Hazırlanır",
+      "on_the_way": "Yoldadır",
+      "completed": "Çatdırıldı",
+      "cancelled": "Ləğv edildi"
+    }
+  },
+  "cart": {
+    "title": "Səbət",
+    "addToCart": "Səbətə əlavə et",
+    "placeOrder": "Sifariş ver",
+    "paymentMethod": "Ödəniş üsulu",
+    "chargeToRoom": "Otağa yaz",
+    "payAtHotel": "Otelə ödə",
+    "total": "Cəmi"
+  },
+  "myRequests": {
+    "active": "Aktiv",
+    "completed": "Tamamlanmış"
+  },
+  "feedback": {
+    "howWasExperience": "Təcrübəniz necə idi?",
+    "howEasy": "Bu sorğunu etmək nə qədər asan idi?",
+    "optionalComment": "İstəyə bağlı şərh"
+  },
+  "settings": {
+    "language": "Dil",
+    "endSession": "Sessiyanı bitir"
+  }
+}

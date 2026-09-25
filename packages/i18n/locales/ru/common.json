@@ -1,0 +1,84 @@
+{
+  "app": { "name": "ROOM-AURA" },
+  "nav": {
+    "home": "Главная",
+    "services": "Услуги",
+    "myRequests": "Мои запросы",
+    "hotel": "Отель",
+    "settings": "Настройки"
+  },
+  "common": {
+    "send": "Отправить",
+    "cancel": "Отмена",
+    "confirm": "Подтвердить",
+    "back": "Назад",
+    "save": "Сохранить",
+    "loading": "Загрузка…",
+    "optional": "Необязательно",
+    "note": "Примечание",
+    "minutes": "минут"
+  },
+  "onboarding": {
+    "chooseLanguage": "Выберите язык",
+    "connectToHotel": "Подключитесь к отелю",
+    "scanQr": "Отсканируйте QR-код отеля/номера",
+    "enterCode": "Введите код доступа",
+    "connecting": "Подключение…",
+    "invalidCode": "Этот код недействителен. Обратитесь на ресепшн."
+  },
+  "home": {
+    "welcomeTo": "Добро пожаловать в",
+    "room": "Номер",
+    "howCanWeHelp": "Чем мы можем помочь?"
+  },
+  "request": {
+    "sendRequest": "Отправить запрос",
+    "requestSent": "Запрос отправлен",
+    "estimatedDelivery": "Ожидаемое время выполнения",
+    "quantity": "Количество",
+    "addNote": "Добавить примечание (необязательно)",
+    "otherRequest": "Другой запрос",
+    "whatDoYouNeed": "Что вам нужно?",
+    "typeInYourLanguage": "Напишите запрос на своём языке"
+  },
+  "status": {
+    "service": {
+      "new": "Запрос получен",
+      "accepted": "Принято",
+      "in_progress": "В процессе",
+      "on_the_way": "В пути",
+      "completed": "Выполнено",
+      "cancelled": "Отменено"
+    },
+    "order": {
+      "new": "Заказ получен",
+      "accepted": "Подтверждено",
+      "in_progress": "Готовится",
+      "on_the_way": "В пути",
+      "completed": "Доставлено",
+      "cancelled": "Отменено"
+    }
+  },
+  "cart": {
+    "title": "Корзина",
+    "addToCart": "Добавить в корзину",
+    "placeOrder": "Оформить заказ",
+    "paymentMethod": "Способ оплаты",
+    "chargeToRoom": "Записать на номер",
+    "payAtHotel": "Оплатить в отеле",
+    "total": "Итого"
+  },
+  "myRequests": {
+    "active": "Активные",
+    "completed": "Завершённые"
+  },
+  "feedback": {
+    "howWasExperience": "Как прошёл ваш опыт?",
+    "howEasy": "Насколько легко было оставить этот запрос?",
+    "optionalComment": "Комментарий (необязательно)"
+  },
+  "settings": {
+    "language": "Язык",
+    "endSession": "Завершить сеанс"
+  }
+}

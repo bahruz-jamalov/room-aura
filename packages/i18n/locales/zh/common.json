@@ -1,0 +1,84 @@
+{
+  "app": { "name": "ROOM-AURA" },
+  "nav": {
+    "home": "首页",
+    "services": "服务",
+    "myRequests": "我的请求",
+    "hotel": "酒店",
+    "settings": "设置"
+  },
+  "common": {
+    "send": "发送",
+    "cancel": "取消",
+    "confirm": "确认",
+    "back": "返回",
+    "save": "保存",
+    "loading": "加载中…",
+    "optional": "可选",
+    "note": "备注",
+    "minutes": "分钟"
+  },
+  "onboarding": {
+    "chooseLanguage": "选择您的语言",
+    "connectToHotel": "连接到酒店",
+    "scanQr": "扫描酒店/房间二维码",
+    "enterCode": "输入访问码",
+    "connecting": "连接中…",
+    "invalidCode": "该验证码无效，请联系前台。"
+  },
+  "home": {
+    "welcomeTo": "欢迎入住",
+    "room": "房间",
+    "howCanWeHelp": "我们能为您做些什么？"
+  },
+  "request": {
+    "sendRequest": "发送请求",
+    "requestSent": "请求已发送",
+    "estimatedDelivery": "预计送达时间",
+    "quantity": "数量",
+    "addNote": "添加备注（可选）",
+    "otherRequest": "其他请求",
+    "whatDoYouNeed": "您需要什么？",
+    "typeInYourLanguage": "请用您自己的语言输入您的需求"
+  },
+  "status": {
+    "service": {
+      "new": "请求已收到",
+      "accepted": "已接受",
+      "in_progress": "处理中",
+      "on_the_way": "配送中",
+      "completed": "已完成",
+      "cancelled": "已取消"
+    },
+    "order": {
+      "new": "订单已收到",
+      "accepted": "已确认",
+      "in_progress": "制作中",
+      "on_the_way": "配送中",
+      "completed": "已送达",
+      "cancelled": "已取消"
+    }
+  },
+  "cart": {
+    "title": "购物车",
+    "addToCart": "加入购物车",
+    "placeOrder": "下单",
+    "paymentMethod": "付款方式",
+    "chargeToRoom": "记入房费",
+    "payAtHotel": "到店支付",
+    "total": "总计"
+  },
+  "myRequests": {
+    "active": "进行中",
+    "completed": "已完成"
+  },
+  "feedback": {
+    "howWasExperience": "您的体验如何？",
+    "howEasy": "提交此请求的操作是否简便？",
+    "optionalComment": "评论（可选）"
+  },
+  "settings": {
+    "language": "语言",
+    "endSession": "结束会话"
+  }
+}

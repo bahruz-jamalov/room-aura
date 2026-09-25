@@ -1,0 +1,84 @@
+{
+  "app": { "name": "ROOM-AURA" },
+  "nav": {
+    "home": "Accueil",
+    "services": "Services",
+    "myRequests": "Mes demandes",
+    "hotel": "Hôtel",
+    "settings": "Paramètres"
+  },
+  "common": {
+    "send": "Envoyer",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "back": "Retour",
+    "save": "Enregistrer",
+    "loading": "Chargement…",
+    "optional": "Facultatif",
+    "note": "Remarque",
+    "minutes": "minutes"
+  },
+  "onboarding": {
+    "chooseLanguage": "Choisissez votre langue",
+    "connectToHotel": "Connectez-vous à votre hôtel",
+    "scanQr": "Scannez le QR code de l'hôtel/chambre",
+    "enterCode": "Entrez le code d'accès",
+    "connecting": "Connexion…",
+    "invalidCode": "Ce code n'est pas valide. Veuillez contacter la réception."
+  },
+  "home": {
+    "welcomeTo": "Bienvenue à",
+    "room": "Chambre",
+    "howCanWeHelp": "Comment pouvons-nous vous aider ?"
+  },
+  "request": {
+    "sendRequest": "Envoyer la demande",
+    "requestSent": "Demande envoyée",
+    "estimatedDelivery": "Délai estimé",
+    "quantity": "Quantité",
+    "addNote": "Ajouter une remarque (facultatif)",
+    "otherRequest": "Autre demande",
+    "whatDoYouNeed": "De quoi avez-vous besoin ?",
+    "typeInYourLanguage": "Écrivez votre demande dans votre propre langue"
+  },
+  "status": {
+    "service": {
+      "new": "Demande reçue",
+      "accepted": "Acceptée",
+      "in_progress": "En cours",
+      "on_the_way": "En chemin",
+      "completed": "Terminée",
+      "cancelled": "Annulée"
+    },
+    "order": {
+      "new": "Commande reçue",
+      "accepted": "Confirmée",
+      "in_progress": "En préparation",
+      "on_the_way": "En chemin",
+      "completed": "Livrée",
+      "cancelled": "Annulée"
+    }
+  },
+  "cart": {
+    "title": "Panier",
+    "addToCart": "Ajouter au panier",
+    "placeOrder": "Passer la commande",
+    "paymentMethod": "Mode de paiement",
+    "chargeToRoom": "Facturer à la chambre",
+    "payAtHotel": "Payer à l'hôtel",
+    "total": "Total"
+  },
+  "myRequests": {
+    "active": "En cours",
+    "completed": "Terminées"
+  },
+  "feedback": {
+    "howWasExperience": "Comment s'est passée votre expérience ?",
+    "howEasy": "À quel point était-il facile de faire cette demande ?",
+    "optionalComment": "Commentaire (facultatif)"
+  },
+  "settings": {
+    "language": "Langue",
+    "endSession": "Terminer la session"
+  }
+}

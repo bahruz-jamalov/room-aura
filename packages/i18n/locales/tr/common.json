@@ -1,0 +1,84 @@
+{
+  "app": { "name": "ROOM-AURA" },
+  "nav": {
+    "home": "Ana Sayfa",
+    "services": "Hizmetler",
+    "myRequests": "Taleplerim",
+    "hotel": "Otel",
+    "settings": "Ayarlar"
+  },
+  "common": {
+    "send": "Gönder",
+    "cancel": "İptal",
+    "confirm": "Onayla",
+    "back": "Geri",
+    "save": "Kaydet",
+    "loading": "Yükleniyor…",
+    "optional": "İsteğe bağlı",
+    "note": "Not",
+    "minutes": "dakika"
+  },
+  "onboarding": {
+    "chooseLanguage": "Dilinizi seçin",
+    "connectToHotel": "Otelinize bağlanın",
+    "scanQr": "Otel/Oda QR Kodunu Tarayın",
+    "enterCode": "Giriş Kodunu Girin",
+    "connecting": "Bağlanıyor…",
+    "invalidCode": "Bu kod geçerli değil. Lütfen resepsiyonla iletişime geçin."
+  },
+  "home": {
+    "welcomeTo": "Hoş geldiniz",
+    "room": "Oda",
+    "howCanWeHelp": "Size nasıl yardımcı olabiliriz?"
+  },
+  "request": {
+    "sendRequest": "Talep Gönder",
+    "requestSent": "Talep gönderildi",
+    "estimatedDelivery": "Tahmini teslim süresi",
+    "quantity": "Adet",
+    "addNote": "Not ekle (isteğe bağlı)",
+    "otherRequest": "Diğer Talep",
+    "whatDoYouNeed": "Neye ihtiyacınız var?",
+    "typeInYourLanguage": "Talebinizi kendi dilinizde yazın"
+  },
+  "status": {
+    "service": {
+      "new": "Talep Alındı",
+      "accepted": "Kabul Edildi",
+      "in_progress": "İşlemde",
+      "on_the_way": "Yolda",
+      "completed": "Tamamlandı",
+      "cancelled": "İptal Edildi"
+    },
+    "order": {
+      "new": "Sipariş Alındı",
+      "accepted": "Onaylandı",
+      "in_progress": "Hazırlanıyor",
+      "on_the_way": "Yolda",
+      "completed": "Teslim Edildi",
+      "cancelled": "İptal Edildi"
+    }
+  },
+  "cart": {
+    "title": "Sepet",
+    "addToCart": "Sepete Ekle",
+    "placeOrder": "Sipariş Ver",
+    "paymentMethod": "Ödeme yöntemi",
+    "chargeToRoom": "Odaya Yansıt",
+    "payAtHotel": "Otelde Öde",
+    "total": "Toplam"
+  },
+  "myRequests": {
+    "active": "Aktif",
+    "completed": "Tamamlanan"
+  },
+  "feedback": {
+    "howWasExperience": "Deneyiminiz nasıldı?",
+    "howEasy": "Bu talebi yapmak ne kadar kolaydı?",
+    "optionalComment": "İsteğe bağlı yorum"
+  },
+  "settings": {
+    "language": "Dil",
+    "endSession": "Oturumu sonlandır"
+  }
+}

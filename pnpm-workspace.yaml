@@ -1,3 +1,7 @@
 packages:
   - "apps/*"
   - "packages/*"
+allowBuilds:
+  # esbuild's postinstall only downloads its own prebuilt native binary
+  # (needed by vite/tsx) — no arbitrary code from a third party.
+  esbuild: true

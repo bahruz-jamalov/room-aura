@@ -1,0 +1,84 @@
+{
+  "app": { "name": "ROOM-AURA" },
+  "nav": {
+    "home": "Home",
+    "services": "Services",
+    "myRequests": "My Requests",
+    "hotel": "Hotel",
+    "settings": "Settings"
+  },
+  "common": {
+    "send": "Send",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "back": "Back",
+    "save": "Save",
+    "loading": "Loading…",
+    "optional": "Optional",
+    "note": "Note",
+    "minutes": "minutes"
+  },
+  "onboarding": {
+    "chooseLanguage": "Choose your language",
+    "connectToHotel": "Connect to your hotel",
+    "scanQr": "Scan Hotel/Room QR",
+    "enterCode": "Enter Access Code",
+    "connecting": "Connecting…",
+    "invalidCode": "That code isn't valid. Please check with reception."
+  },
+  "home": {
+    "welcomeTo": "Welcome to",
+    "room": "Room",
+    "howCanWeHelp": "How can we help you?"
+  },
+  "request": {
+    "sendRequest": "Send Request",
+    "requestSent": "Request sent",
+    "estimatedDelivery": "Estimated delivery",
+    "quantity": "Quantity",
+    "addNote": "Add a note (optional)",
+    "otherRequest": "Other Request",
+    "whatDoYouNeed": "What do you need?",
+    "typeInYourLanguage": "Type your request in your own language"
+  },
+  "status": {
+    "service": {
+      "new": "Request Received",
+      "accepted": "Accepted",
+      "in_progress": "In Progress",
+      "on_the_way": "On the Way",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "order": {
+      "new": "Order Received",
+      "accepted": "Confirmed",
+      "in_progress": "Preparing",
+      "on_the_way": "On the Way",
+      "completed": "Delivered",
+      "cancelled": "Cancelled"
+    }
+  },
+  "cart": {
+    "title": "Cart",
+    "addToCart": "Add to Cart",
+    "placeOrder": "Place Order",
+    "paymentMethod": "Payment method",
+    "chargeToRoom": "Charge to Room",
+    "payAtHotel": "Pay at Hotel",
+    "total": "Total"
+  },
+  "myRequests": {
+    "active": "Active",
+    "completed": "Completed"
+  },
+  "feedback": {
+    "howWasExperience": "How was your experience?",
+    "howEasy": "How easy was it to make this request?",
+    "optionalComment": "Optional comment"
+  },
+  "settings": {
+    "language": "Language",
+    "endSession": "End session"
+  }
+}

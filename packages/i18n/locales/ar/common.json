@@ -1,0 +1,84 @@
+{
+  "app": { "name": "ROOM-AURA" },
+  "nav": {
+    "home": "الرئيسية",
+    "services": "الخدمات",
+    "myRequests": "طلباتي",
+    "hotel": "الفندق",
+    "settings": "الإعدادات"
+  },
+  "common": {
+    "send": "إرسال",
+    "cancel": "إلغاء",
+    "confirm": "تأكيد",
+    "back": "رجوع",
+    "save": "حفظ",
+    "loading": "جارٍ التحميل…",
+    "optional": "اختياري",
+    "note": "ملاحظة",
+    "minutes": "دقائق"
+  },
+  "onboarding": {
+    "chooseLanguage": "اختر لغتك",
+    "connectToHotel": "اتصل بالفندق",
+    "scanQr": "امسح رمز QR الخاص بالفندق/الغرفة",
+    "enterCode": "أدخل رمز الدخول",
+    "connecting": "جارٍ الاتصال…",
+    "invalidCode": "هذا الرمز غير صالح. يرجى التواصل مع الاستقبال."
+  },
+  "home": {
+    "welcomeTo": "مرحبًا بكم في",
+    "room": "الغرفة",
+    "howCanWeHelp": "كيف يمكننا مساعدتك؟"
+  },
+  "request": {
+    "sendRequest": "إرسال الطلب",
+    "requestSent": "تم إرسال الطلب",
+    "estimatedDelivery": "الوقت المتوقع للتنفيذ",
+    "quantity": "الكمية",
+    "addNote": "أضف ملاحظة (اختياري)",
+    "otherRequest": "طلب آخر",
+    "whatDoYouNeed": "ما الذي تحتاجه؟",
+    "typeInYourLanguage": "اكتب طلبك بلغتك الخاصة"
+  },
+  "status": {
+    "service": {
+      "new": "تم استلام الطلب",
+      "accepted": "تم القبول",
+      "in_progress": "قيد التنفيذ",
+      "on_the_way": "في الطريق",
+      "completed": "تم الإنجاز",
+      "cancelled": "ملغى"
+    },
+    "order": {
+      "new": "تم استلام الطلب",
+      "accepted": "تم التأكيد",
+      "in_progress": "قيد التحضير",
+      "on_the_way": "في الطريق",
+      "completed": "تم التوصيل",
+      "cancelled": "ملغى"
+    }
+  },
+  "cart": {
+    "title": "السلة",
+    "addToCart": "أضف إلى السلة",
+    "placeOrder": "تأكيد الطلب",
+    "paymentMethod": "طريقة الدفع",
+    "chargeToRoom": "أضف إلى فاتورة الغرفة",
+    "payAtHotel": "الدفع في الفندق",
+    "total": "الإجمالي"
+  },
+  "myRequests": {
+    "active": "نشطة",
+    "completed": "مكتملة"
+  },
+  "feedback": {
+    "howWasExperience": "كيف كانت تجربتك؟",
+    "howEasy": "ما مدى سهولة تقديم هذا الطلب؟",
+    "optionalComment": "تعليق (اختياري)"
+  },
+  "settings": {
+    "language": "اللغة",
+    "endSession": "إنهاء الجلسة"
+  }
+}

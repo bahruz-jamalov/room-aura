@@ -1,0 +1,84 @@
+{
+  "app": { "name": "ROOM-AURA" },
+  "nav": {
+    "home": "Start",
+    "services": "Services",
+    "myRequests": "Meine Anfragen",
+    "hotel": "Hotel",
+    "settings": "Einstellungen"
+  },
+  "common": {
+    "send": "Senden",
+    "cancel": "Abbrechen",
+    "confirm": "Bestätigen",
+    "back": "Zurück",
+    "save": "Speichern",
+    "loading": "Wird geladen…",
+    "optional": "Optional",
+    "note": "Hinweis",
+    "minutes": "Minuten"
+  },
+  "onboarding": {
+    "chooseLanguage": "Wählen Sie Ihre Sprache",
+    "connectToHotel": "Mit Ihrem Hotel verbinden",
+    "scanQr": "Hotel-/Zimmer-QR-Code scannen",
+    "enterCode": "Zugangscode eingeben",
+    "connecting": "Verbindung wird hergestellt…",
+    "invalidCode": "Dieser Code ist ungültig. Bitte wenden Sie sich an die Rezeption."
+  },
+  "home": {
+    "welcomeTo": "Willkommen im",
+    "room": "Zimmer",
+    "howCanWeHelp": "Wie können wir Ihnen helfen?"
+  },
+  "request": {
+    "sendRequest": "Anfrage senden",
+    "requestSent": "Anfrage gesendet",
+    "estimatedDelivery": "Voraussichtliche Lieferzeit",
+    "quantity": "Menge",
+    "addNote": "Hinweis hinzufügen (optional)",
+    "otherRequest": "Andere Anfrage",
+    "whatDoYouNeed": "Was benötigen Sie?",
+    "typeInYourLanguage": "Schreiben Sie Ihre Anfrage in Ihrer eigenen Sprache"
+  },
+  "status": {
+    "service": {
+      "new": "Anfrage erhalten",
+      "accepted": "Angenommen",
+      "in_progress": "In Bearbeitung",
+      "on_the_way": "Unterwegs",
+      "completed": "Abgeschlossen",
+      "cancelled": "Storniert"
+    },
+    "order": {
+      "new": "Bestellung erhalten",
+      "accepted": "Bestätigt",
+      "in_progress": "Wird zubereitet",
+      "on_the_way": "Unterwegs",
+      "completed": "Geliefert",
+      "cancelled": "Storniert"
+    }
+  },
+  "cart": {
+    "title": "Warenkorb",
+    "addToCart": "In den Warenkorb",
+    "placeOrder": "Bestellung aufgeben",
+    "paymentMethod": "Zahlungsmethode",
+    "chargeToRoom": "Auf Zimmerrechnung",
+    "payAtHotel": "Im Hotel bezahlen",
+    "total": "Gesamt"
+  },
+  "myRequests": {
+    "active": "Aktiv",
+    "completed": "Abgeschlossen"
+  },
+  "feedback": {
+    "howWasExperience": "Wie war Ihre Erfahrung?",
+    "howEasy": "Wie einfach war es, diese Anfrage zu stellen?",
+    "optionalComment": "Kommentar (optional)"
+  },
+  "settings": {
+    "language": "Sprache",
+    "endSession": "Sitzung beenden"
+  }
+}
