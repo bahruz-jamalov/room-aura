@@ -262,5 +262,63 @@ through the UI, not scripts:
 - Regression suites re-run after the `SECURITY DEFINER` change and still
   pass: `pnpm test:anon-access` (19/19), `pnpm test:isolation` (40/40).
 
-Phases 6–9 (hotel configuration, feedback/analytics, super admin,
-hardening) have not started.
+**Phase 6 (hotel configuration: Services, Menu, Rooms/Floors,
+Departments, Staff, QR/Access) is complete** — six admin config screens,
+each verified against the live project by actually configuring things
+through the UI, not just building forms:
+
+- `/departments`, `/rooms` (floors + rooms + live occupancy),
+  `/services` (categories + services), `/menu` (categories + items,
+  Available/Sold Out/Hidden) all follow the same pattern: a list, a
+  SidePanel add/edit form, and a delete that surfaces the real
+  underlying foreign-key behavior instead of a generic error. Rooms
+  shows whether a room currently has a live `guest_sessions` row
+  ("Occupied"/"Vacant") alongside floor/room CRUD.
+- `/services` and `/menu` add a `TranslationEditor` — one locale at a
+  time (a select + name/description), flagging any of the hotel's other
+  supported locales that don't have a translation yet — instead of
+  stacking 9 text areas per field. Verified live: created a "Spa"
+  category with EN + AZ translations and a paid service, confirmed it
+  appeared correctly in the live guest tourist app end to end, then
+  toggled a real menu item (Club Sandwich) to Sold Out and confirmed
+  guests saw that immediately too.
+- `/staff` (invite, role, department, activate/deactivate) needed a new
+  edge function, `invite-staff`, because `staff_users.id` is a foreign
+  key straight to `auth.users(id)` — creating a staff member means
+  creating an auth user first, which needs the service role and can't
+  run from the admin app's own browser session. Verified live: created
+  a staff account through the UI, got back a generated temporary
+  password, and confirmed it can actually sign in and lands on a
+  correctly department-scoped dashboard — not just a database row.
+- `/access` (hotel QR, per-room QR, access codes: generate, preview,
+  download PNG, deactivate, regenerate) generates and hashes tokens
+  entirely client-side (same approach as `scripts/seed.ts`) and renders
+  the QR image with the `qrcode` package rather than an external QR API,
+  so a live guest-access secret is never sent to a third party just to
+  draw a picture of it. Verified live: generated a real Room 1204 QR,
+  scanned its `/j/:token` link in a fresh browser tab, and confirmed it
+  correctly signed a guest into Room 1204.
+- Every nav item and route is gated by `packages/shared/src/permissions.ts`,
+  matching the roles matrix exactly: Rooms/Departments/Staff/QR-Access are
+  invisible to plain staff (not just disabled), Services/Menu are visible
+  read-only, and — found while testing — hiding a nav link doesn't stop
+  direct URL navigation, so a new `RequireCapability` route guard
+  redirects a plain staff member away from a gated screen even if they
+  type the URL directly.
+- Two more real bugs found and fixed while building this phase (not
+  hypothetical — each was caught by actually testing the CRUD flow
+  against the schema): the Departments/Rooms/Services "can't delete,
+  still referenced" messages were correct for those tables, but the same
+  assumption was wrong for `service_categories → services` and
+  `menu_categories → menu_items` (both `ON DELETE CASCADE`, not
+  `RESTRICT` — deleting a category silently deletes its contents) and for
+  `order_items.menu_item_id` (`ON DELETE SET NULL`, not `RESTRICT` — a
+  menu item can always be deleted). Also found and fixed a Phase 2
+  regression: `redeem-access`'s `last_used_at` update was fire-and-forget
+  and never actually completing, so every access token showed "Last used:
+  Never" regardless of real use — folded into the function's existing
+  awaited `Promise.all` and re-verified with a real redemption.
+- Regression suites re-run after every schema-adjacent change and still
+  pass: `pnpm test:anon-access` (19/19), `pnpm test:isolation` (40/40).
+
+Phases 7–9 (feedback/analytics, super admin, hardening) have not started.
