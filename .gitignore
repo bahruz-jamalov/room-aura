@@ -17,6 +17,9 @@ build/
 supabase/.branches
 supabase/.temp
 
+# Seed script output (non-secret IDs, but generated + machine-specific)
+scripts/.demo-ids.json
+
 # Editor / OS
 .DS_Store
 .vscode/*

@@ -18,9 +18,13 @@
     "db:reset": "supabase db reset",
     "db:push": "supabase db push",
     "db:diff": "supabase db diff",
-    "db:test": "supabase test db"
+    "db:test": "supabase test db",
+    "seed": "tsx scripts/seed.ts",
+    "test:isolation": "tsx scripts/test-isolation.ts"
   },
   "devDependencies": {
+    "@supabase/supabase-js": "^2.47.10",
+    "tsx": "^4.19.2",
     "typescript": "^5.7.3"
   }
 }
