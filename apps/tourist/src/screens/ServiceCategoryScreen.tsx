@@ -1,5 +1,4 @@
-// Discovery only — Phase 2 scope. Phase 3 adds the "Send Request" action
-// (quantity, note, submit) on top of this same list.
+// Tapping a service opens ServiceDetailScreen (quantity, note, Send Request).
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { formatMoney } from "@room-aura/shared";
@@ -33,7 +32,19 @@ export default function ServiceCategoryScreen() {
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: "var(--ra-space-3)" }}>
           {services.map((svc) => (
-            <div key={svc.id} style={{ ...card, padding: "var(--ra-space-4)", display: "flex", gap: "var(--ra-space-3)" }}>
+            <button
+              key={svc.id}
+              onClick={() => navigate(`/services/${categoryId}/${svc.id}`)}
+              style={{
+                ...card,
+                padding: "var(--ra-space-4)",
+                display: "flex",
+                gap: "var(--ra-space-3)",
+                textAlign: "left",
+                cursor: "pointer",
+                width: "100%",
+              }}
+            >
               {svc.imageUrl && (
                 <img
                   src={svc.imageUrl}
@@ -59,7 +70,7 @@ export default function ServiceCategoryScreen() {
                   </p>
                 )}
               </div>
-            </div>
+            </button>
           ))}
         </div>
       )}

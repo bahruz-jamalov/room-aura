@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import CategoryGrid from "../components/CategoryGrid";
+import OtherRequestTile from "../components/OtherRequestTile";
 import { useGuestSession } from "../guest/GuestSessionContext";
 import { useServiceCategories } from "../hooks/useServiceCategories";
 
@@ -14,7 +15,7 @@ export default function ServicesScreen() {
       {loading ? (
         <p style={{ color: "var(--ra-color-text-secondary)" }}>{t("common.loading")}</p>
       ) : (
-        <CategoryGrid categories={categories} />
+        <CategoryGrid categories={categories} trailing={<OtherRequestTile />} />
       )}
     </div>
   );

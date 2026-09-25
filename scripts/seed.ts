@@ -198,6 +198,108 @@ async function upsertAccessToken(
   console.log(`  access token "${label}" ready`);
 }
 
+async function setFreetextDepartment(hotelId: string, departmentId: string): Promise<void> {
+  const { error } = await admin
+    .from("hotel_settings")
+    .update({ freetext_department_id: departmentId })
+    .eq("hotel_id", hotelId);
+  if (error) throw error;
+  console.log("  freetext default department set");
+}
+
+async function upsertRoutingRule(hotelId: string, keyword: string, departmentId: string, priority: number) {
+  const { data: existing } = await admin
+    .from("routing_rules")
+    .select("id")
+    .eq("hotel_id", hotelId)
+    .eq("keyword", keyword)
+    .maybeSingle();
+  if (existing) return;
+  const { error } = await admin.from("routing_rules").insert({ hotel_id: hotelId, keyword, department_id: departmentId, priority });
+  if (error) throw error;
+  console.log(`  routing rule "${keyword}" -> department ready`);
+}
+
+interface DemoCategorySeed {
+  icon: string;
+  translations: Record<string, { name: string; description?: string }>;
+  services: {
+    departmentCode: string;
+    isFree: boolean;
+    priceMinor?: number;
+    currency?: string;
+    expectedMinutes?: number;
+    allowsQuantity?: boolean;
+    maxQuantity?: number;
+    translations: Record<string, { name: string; description?: string }>;
+  }[];
+}
+
+/**
+ * Minimal hotel-controlled catalogue so Phase 3's structured-request flow
+ * (and the spec's free-text end-to-end demo, which routes to Housekeeping)
+ * has something real to point at. The full catalogue admin UI is Phase 6 —
+ * this is just enough data to exercise the guest-side flow now.
+ *
+ * Idempotency is coarse on purpose: if this hotel has ANY category already,
+ * assume the catalogue was seeded before and skip entirely, rather than
+ * diffing category-by-category.
+ */
+async function upsertCatalogue(hotelId: string, departmentIds: Record<string, string>, categories: DemoCategorySeed[]) {
+  const { count } = await admin
+    .from("service_categories")
+    .select("id", { count: "exact", head: true })
+    .eq("hotel_id", hotelId);
+  if (count && count > 0) {
+    console.log("  catalogue already seeded, skipping");
+    return;
+  }
+
+  for (const cat of categories) {
+    const { data: catRow, error: catError } = await admin
+      .from("service_categories")
+      .insert({ hotel_id: hotelId, category_type: "standard", icon: cat.icon })
+      .select("id")
+      .single();
+    if (catError) throw catError;
+
+    for (const [locale, t] of Object.entries(cat.translations)) {
+      const { error: trError } = await admin
+        .from("service_category_translations")
+        .insert({ category_id: catRow.id, locale, name: t.name, description: t.description ?? null });
+      if (trError) throw trError;
+    }
+    console.log(`  category "${cat.translations.en?.name}" ready`);
+
+    for (const svc of cat.services) {
+      const { data: svcRow, error: svcError } = await admin
+        .from("services")
+        .insert({
+          hotel_id: hotelId,
+          category_id: catRow.id,
+          department_id: departmentIds[svc.departmentCode],
+          is_free: svc.isFree,
+          price_minor: svc.priceMinor ?? 0,
+          currency: svc.currency ?? "USD",
+          expected_minutes: svc.expectedMinutes ?? null,
+          allows_quantity: svc.allowsQuantity ?? false,
+          max_quantity: svc.maxQuantity ?? 1,
+        })
+        .select("id")
+        .single();
+      if (svcError) throw svcError;
+
+      for (const [locale, t] of Object.entries(svc.translations)) {
+        const { error: trError } = await admin
+          .from("service_translations")
+          .insert({ service_id: svcRow.id, locale, name: t.name, description: t.description ?? null });
+        if (trError) throw trError;
+      }
+      console.log(`  service "${svc.translations.en?.name}" ready`);
+    }
+  }
+}
+
 async function getOrCreateAuthUser(email: string): Promise<string> {
   // The admin SDK has no getUserByEmail in every CLI version, so page
   // through listUsers rather than assume one call covers it.
@@ -259,6 +361,51 @@ async function main() {
   // human-typeable, since a guest has to read it off a card, not scan it.
   const hotelACode = randomAccessCode();
   await upsertAccessToken(hotelAId, "access_code", null, "Hotel-wide access code (demo)", hotelACode);
+
+  // Free-text ("Other Request") default routing — Guest Relations catches
+  // anything the keyword table below doesn't match. See docs/ARCHITECTURE.md
+  // section 9.
+  await setFreetextDepartment(hotelAId, hotelADepts["guest_relations"]);
+  await upsertRoutingRule(hotelAId, "towel", hotelADepts["housekeeping"], 10);
+  await upsertRoutingRule(hotelAId, "clean", hotelADepts["housekeeping"], 10);
+  await upsertRoutingRule(hotelAId, "pillow", hotelADepts["housekeeping"], 10);
+  await upsertRoutingRule(hotelAId, "air condition", hotelADepts["maintenance"], 10);
+  await upsertRoutingRule(hotelAId, "transfer", hotelADepts["transportation"], 10);
+
+  // Minimal catalogue — just enough to exercise the structured-request flow
+  // and match the spec's Housekeeping example. Phase 6 builds the real
+  // admin UI for hotels to manage this themselves.
+  await upsertCatalogue(hotelAId, hotelADepts, [
+    {
+      icon: "\u{1F9FA}",
+      translations: {
+        en: { name: "Housekeeping" },
+        az: { name: "Otaq xidməti" },
+      },
+      services: [
+        {
+          departmentCode: "housekeeping",
+          isFree: true,
+          expectedMinutes: 10,
+          allowsQuantity: true,
+          maxQuantity: 5,
+          translations: {
+            en: { name: "Extra Towels" },
+            az: { name: "Əlavə dəsmal" },
+          },
+        },
+        {
+          departmentCode: "housekeeping",
+          isFree: true,
+          expectedMinutes: 15,
+          translations: {
+            en: { name: "Room Cleaning" },
+            az: { name: "Otağın təmizlənməsi" },
+          },
+        },
+      ],
+    },
+  ]);
 
   console.log("\nSeeding Hotel B — Bosporus Hotel");
   const hotelBId = await upsertHotel(HOTEL_B);

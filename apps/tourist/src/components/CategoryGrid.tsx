@@ -1,8 +1,9 @@
+import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import type { ServiceCategoryView } from "../hooks/useServiceCategories";
 import { card } from "../lib/styles";
 
-export default function CategoryGrid({ categories }: { categories: ServiceCategoryView[] }) {
+export default function CategoryGrid({ categories, trailing }: { categories: ServiceCategoryView[]; trailing?: ReactNode }) {
   const navigate = useNavigate();
   return (
     <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "var(--ra-space-3)" }}>
@@ -27,6 +28,7 @@ export default function CategoryGrid({ categories }: { categories: ServiceCatego
           <span style={{ fontWeight: 600, textAlign: "center" }}>{cat.name}</span>
         </button>
       ))}
+      {trailing}
     </div>
   );
 }

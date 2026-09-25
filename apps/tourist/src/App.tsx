@@ -7,8 +7,11 @@ import ConnectScreen from "./screens/ConnectScreen";
 import HomeScreen from "./screens/HomeScreen";
 import HotelScreen from "./screens/HotelScreen";
 import MyRequestsScreen from "./screens/MyRequestsScreen";
+import OtherRequestScreen from "./screens/OtherRequestScreen";
 import RedeemTokenScreen from "./screens/RedeemTokenScreen";
+import RequestDetailScreen from "./screens/RequestDetailScreen";
 import ServiceCategoryScreen from "./screens/ServiceCategoryScreen";
+import ServiceDetailScreen from "./screens/ServiceDetailScreen";
 import ServicesScreen from "./screens/ServicesScreen";
 import SettingsScreen from "./screens/SettingsScreen";
 import WelcomeScreen from "./screens/WelcomeScreen";
@@ -34,7 +37,10 @@ export default function App() {
             <Route path="/home" element={<HomeScreen />} />
             <Route path="/services" element={<ServicesScreen />} />
             <Route path="/services/:categoryId" element={<ServiceCategoryScreen />} />
+            <Route path="/services/:categoryId/:serviceId" element={<ServiceDetailScreen />} />
+            <Route path="/request/other" element={<OtherRequestScreen />} />
             <Route path="/requests" element={<MyRequestsScreen />} />
+            <Route path="/requests/:requestId" element={<RequestDetailScreen />} />
             <Route path="/hotel" element={<HotelScreen />} />
             <Route path="/settings" element={<SettingsScreen />} />
           </Route>
