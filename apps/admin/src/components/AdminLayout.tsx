@@ -1,27 +1,30 @@
-// Left sidebar + top bar, per docs/ARCHITECTURE.md section 6. Only
-// Dashboard and Requests are built (Phase 4) — the rest of the sidebar
-// renders per the final IA, disabled, so the shell reads as a real product
-// from day one rather than a two-page prototype (same choice as the tourist
-// app's 5-tab nav in Phase 2).
+// Left sidebar + top bar, per docs/ARCHITECTURE.md section 6. `enabled`
+// tracks build progress (Phase 4: Dashboard/Requests; Phase 6: config
+// screens); `visible` mirrors the role matrix in packages/shared/src/
+// permissions.ts so a plain staff member never even sees a nav item RLS
+// would reject anyway. Screens not yet built stay enabled: false and
+// render as inert placeholders, same choice as the tourist app's 5-tab
+// nav in Phase 2.
 import type { ReactNode } from "react";
 import { NavLink, Navigate, Outlet } from "react-router-dom";
-import { useAuth } from "../auth/AuthContext";
+import { permissions } from "@room-aura/shared";
+import { useAuth, type StaffProfile } from "../auth/AuthContext";
 import { useNewRequestsCount } from "../hooks/useNewRequestsCount";
 import LoginScreen from "../screens/LoginScreen";
 
 const NAV_ITEMS = [
-  { to: "/dashboard", label: "Dashboard", enabled: true },
-  { to: "/requests", label: "Requests", enabled: true },
-  { to: "/orders", label: "Orders", enabled: false },
-  { to: "/services", label: "Services", enabled: false },
-  { to: "/menu", label: "Food & Drinks", enabled: false },
-  { to: "/rooms", label: "Rooms", enabled: false },
-  { to: "/departments", label: "Departments", enabled: false },
-  { to: "/staff", label: "Staff", enabled: false },
-  { to: "/feedback", label: "Feedback", enabled: false },
-  { to: "/analytics", label: "Analytics", enabled: false },
-  { to: "/access", label: "QR / Access", enabled: false },
-  { to: "/settings", label: "Settings", enabled: false },
+  { to: "/dashboard", label: "Dashboard", enabled: true, visible: () => true },
+  { to: "/requests", label: "Requests", enabled: true, visible: () => true },
+  { to: "/orders", label: "Orders", enabled: false, visible: () => true },
+  { to: "/services", label: "Services", enabled: true, visible: () => true },
+  { to: "/menu", label: "Food & Drinks", enabled: true, visible: () => true },
+  { to: "/rooms", label: "Rooms", enabled: true, visible: (s: StaffProfile) => permissions.canManageRoomsAndDepartments(s) },
+  { to: "/departments", label: "Departments", enabled: true, visible: (s: StaffProfile) => permissions.canManageRoomsAndDepartments(s) },
+  { to: "/staff", label: "Staff", enabled: true, visible: (s: StaffProfile) => permissions.canManageStaff(s) },
+  { to: "/feedback", label: "Feedback", enabled: false, visible: () => true },
+  { to: "/analytics", label: "Analytics", enabled: false, visible: () => true },
+  { to: "/access", label: "QR / Access", enabled: true, visible: (s: StaffProfile) => permissions.canManageAccessTokens(s) },
+  { to: "/settings", label: "Settings", enabled: false, visible: () => true },
 ] as const;
 
 export default function AdminLayout() {
@@ -30,6 +33,8 @@ export default function AdminLayout() {
   if (session === undefined) return <Centered>Loading…</Centered>;
   if (!session) return <LoginScreen />;
   if (!staff) return <Centered>Loading…</Centered>;
+
+  const items = NAV_ITEMS.filter((item) => item.visible(staff));
 
   return (
     <div style={{ display: "flex", minHeight: "100vh" }}>
@@ -47,7 +52,7 @@ export default function AdminLayout() {
           ROOM-AURA
         </div>
         <nav style={{ display: "flex", flexDirection: "column", padding: "0 var(--ra-space-3)", gap: 2 }}>
-          {NAV_ITEMS.map((item) =>
+          {items.map((item) =>
             item.enabled ? (
               <NavLink
                 key={item.to}
