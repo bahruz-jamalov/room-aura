@@ -199,8 +199,33 @@ real against the live project:
   `00000000000012_guest_routing_rules_read.sql`).
 - "My Requests" (Active/Completed tabs) also updates live via Realtime.
 
-Phases 4–9 (admin operations, ordering, hotel configuration,
-feedback/analytics, super admin, hardening) have not started. Phase 3's
-guest-side flow is fully demonstrable, but nothing yet drives those status
-changes except direct database access — Phase 4 replaces that with a real
-staff UI.
+**Phase 4 (admin dashboard, live request queue, assignment, status
+management) is complete** — driven by real staff clicks, not scripts:
+
+- Login → Dashboard (KPI cards for what's actually real: New, In Progress,
+  Completed Today, Avg Response Time — Orders/Revenue/Rating/CES are left
+  out rather than faked, since they need Phase 5/7 data that doesn't exist
+  yet) → Requests queue, live via Realtime, with Status/Department/Room
+  filters.
+- The request detail panel's actions are generated from
+  `ALLOWED_TRANSITIONS` (the same table the database trigger enforces), so
+  it can never offer a transition the backend would reject. Verified live:
+  a full New → Accepted → In Progress → On the Way → Completed cycle driven
+  entirely by clicking through the real UI as Hotel A's admin.
+- Assign employee, set estimated time, and add an internal note all work,
+  each producing a `request_status_history` row; the audit timeline
+  (matching the spec's "14:32 Request received / 14:34 Accepted by
+  Sarah..." example) updates live via Realtime once mounted after the
+  publication includes it.
+- Role scoping verified by actually signing in as a department-scoped
+  Housekeeping staff account: she sees only her department's requests, no
+  department filter, and the sidebar/permissions match
+  `packages/shared/src/permissions.ts`.
+- Two bugs found and fixed while testing: the detail panel's fixed overlay
+  covered the top bar's Sign out button (z-index), and
+  `request_status_history` wasn't in the Realtime publication (migration
+  `00000000000013_history_realtime.sql`), so the audit timeline only
+  showed what existed at mount time.
+
+Phases 5–9 (ordering, hotel configuration, feedback/analytics, super admin,
+hardening) have not started.
