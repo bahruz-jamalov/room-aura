@@ -1,8 +1,13 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { permissions } from "@room-aura/shared";
 import { AuthProvider } from "./auth/AuthContext";
 import AdminLayout, { RootRedirect } from "./components/AdminLayout";
 import RequireCapability from "./components/RequireCapability";
+import { PlatformAuthProvider } from "./platform/PlatformAuthContext";
+import PlatformAnalyticsScreen from "./platform/PlatformAnalyticsScreen";
+import PlatformHotelDetailScreen from "./platform/PlatformHotelDetailScreen";
+import PlatformHotelsScreen from "./platform/PlatformHotelsScreen";
+import PlatformLayout from "./platform/PlatformLayout";
 import AccessScreen from "./screens/AccessScreen";
 import AnalyticsScreen from "./screens/AnalyticsScreen";
 import DashboardScreen from "./screens/DashboardScreen";
@@ -74,6 +79,21 @@ export default function App() {
               }
             />
           </Route>
+
+          <Route
+            path="/platform"
+            element={
+              <PlatformAuthProvider>
+                <PlatformLayout />
+              </PlatformAuthProvider>
+            }
+          >
+            <Route index element={<Navigate to="hotels" replace />} />
+            <Route path="hotels" element={<PlatformHotelsScreen />} />
+            <Route path="hotels/:hotelId" element={<PlatformHotelDetailScreen />} />
+            <Route path="analytics" element={<PlatformAnalyticsScreen />} />
+          </Route>
+
           <Route path="*" element={<RootRedirect />} />
         </Routes>
       </BrowserRouter>

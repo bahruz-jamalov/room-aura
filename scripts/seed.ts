@@ -24,6 +24,7 @@ import {
   HOTEL_B_DEPARTMENTS,
   HOTEL_B_ROOMS,
   HOTEL_B_STAFF,
+  PLATFORM_ADMIN,
   type DemoStaff,
 } from "./demo-data";
 
@@ -444,6 +445,15 @@ async function upsertStaff(hotelId: string, departmentIds: Record<string, string
   }
 }
 
+async function upsertPlatformAdmin(admin_: { email: string; fullName: string }) {
+  const authUserId = await getOrCreateAuthUser(admin_.email);
+  const { data: existing } = await admin.from("platform_admins").select("user_id").eq("user_id", authUserId).maybeSingle();
+  if (existing) return;
+  const { error } = await admin.from("platform_admins").insert({ user_id: authUserId, full_name: admin_.fullName });
+  if (error) throw error;
+  console.log(`  platform admin "${admin_.fullName}" <${admin_.email}> ready`);
+}
+
 async function main() {
   console.log("Seeding Hotel A — Aura Grand Hotel");
   const hotelAId = await upsertHotel(HOTEL_A);
@@ -545,6 +555,9 @@ async function main() {
       ],
     },
   ]);
+
+  console.log("\nSeeding platform admin");
+  await upsertPlatformAdmin(PLATFORM_ADMIN);
 
   console.log("\nSeeding Hotel B — Bosporus Hotel");
   const hotelBId = await upsertHotel(HOTEL_B);

@@ -363,4 +363,44 @@ project with a real rating submitted through the guest UI, not seeded data:
 - Regression suites re-run and still pass: `pnpm test:anon-access`
   (19/19), `pnpm test:isolation` (40/40).
 
-Phases 8–9 (super admin, hardening) have not started.
+**Phase 8 (Super Admin) is complete** — verified live by creating a real
+third hotel through the platform UI, not by seeding fake data:
+
+- `/platform` is a distinct login and layout inside the same admin app
+  (decision #4 in section 12) — a separate `PlatformAuthContext` checks
+  `platform_admins`, not `staff_users`. Signing in as a hotel admin lands
+  on "This account isn't a platform admin" rather than crashing; a real
+  platform admin sees a dark-sidebar shell with Hotels/Analytics nav.
+- `/platform/hotels`: list · create · activate/deactivate · plan for every
+  hotel on the platform. Creating a hotel inserts both the `hotels` row
+  and its required `hotel_settings` row.
+- `/platform/hotels/:id` and `/platform/analytics`: platform admin
+  deliberately has no row-level RLS on `requests`/`orders` across tenants
+  (section 4: "not the right to read an individual guest's messages"), so
+  these call two new `SECURITY DEFINER` RPCs (migration `00000000000020`)
+  instead — `platform_hotel_stats`/`platform_analytics` — each checking
+  `is_platform_admin()` itself as its first line, since bypassing RLS
+  means the function *is* the security boundary here. Verified directly
+  (not just through the UI) that a signed-in hotel admin calling either
+  RPC gets `403 forbidden`, not data.
+- Verified live: signed in as the seeded platform admin
+  (`super@roomaura.demo`), saw both existing hotels, created a third
+  ("Coastal Retreat", Lisbon, EUR) through the UI, activated it and
+  changed its plan to Pro — all three now visible and manageable,
+  satisfying the phase's exit criterion. Confirmed `platform_hotel_stats`
+  returns real numbers for Aura Grand Hotel and handles Bosporus Hotel's
+  all-zero case (no requests/orders yet) without erroring.
+- Found and fixed a real data-quality bug while checking Aura Grand
+  Hotel's revenue through the new stats RPC: it showed up split across
+  two currencies (AED 8.00 + USD 33.00) even though the hotel only sells
+  in AED. Traced it to the two orders placed *before* migration 18
+  (Phase 5's `SECURITY DEFINER` fix) landed — that bug was fixed going
+  forward, but the two rows it had already corrupted were never
+  backfilled. Added migration `00000000000021` to correct every order's
+  currency to its own hotel's currency; re-verified both
+  `platform_hotel_stats` and the hotel-level `/analytics` screen now show
+  a single correct `AED 41.00`.
+- Regression suites re-run and still pass: `pnpm test:anon-access`
+  (19/19), `pnpm test:isolation` (40/40).
+
+Phase 9 (hardening) has not started.

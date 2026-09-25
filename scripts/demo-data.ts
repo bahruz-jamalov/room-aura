@@ -9,6 +9,13 @@
 
 export const DEMO_PASSWORD = "RoomAura!Demo1";
 
+// ROOM-AURA company staff, not a hotel role — grants access to /platform
+// only (docs/ARCHITECTURE.md section 6/7).
+export const PLATFORM_ADMIN = {
+  email: "super@roomaura.demo",
+  fullName: "Room Aura Ops",
+} as const;
+
 export const HOTEL_A = {
   slug: "aura-grand",
   name: "Aura Grand Hotel",
