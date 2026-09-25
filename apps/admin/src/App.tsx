@@ -5,6 +5,7 @@ import AdminLayout, { RootRedirect } from "./components/AdminLayout";
 import RequireCapability from "./components/RequireCapability";
 import DashboardScreen from "./screens/DashboardScreen";
 import DepartmentsScreen from "./screens/DepartmentsScreen";
+import MenuScreen from "./screens/MenuScreen";
 import RequestsScreen from "./screens/RequestsScreen";
 import RoomsScreen from "./screens/RoomsScreen";
 import ServicesScreen from "./screens/ServicesScreen";
@@ -19,6 +20,7 @@ export default function App() {
             <Route path="/dashboard" element={<DashboardScreen />} />
             <Route path="/requests" element={<RequestsScreen />} />
             <Route path="/services" element={<ServicesScreen />} />
+            <Route path="/menu" element={<MenuScreen />} />
             <Route
               path="/departments"
               element={
