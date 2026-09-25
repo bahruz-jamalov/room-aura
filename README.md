@@ -71,6 +71,7 @@ paste it into chat with an AI assistant, never commit it:
 ```bash
 export SUPABASE_ACCESS_TOKEN=sbp_...
 pnpm exec supabase functions deploy redeem-access
+pnpm exec supabase functions deploy translate-content
 ```
 
 Copy env files and fill in your project's URL + publishable (anon) key —
@@ -171,8 +172,35 @@ verified against the live project, not just built:
 - Full 5-tab navigation shell in place; language switching verified live
   mid-session (English → Azerbaijani), including nav labels and content.
 - Service category/service discovery screens read hotel-controlled catalogue
-  data through RLS with locale fallback (requested → hotel default → en);
-  empty today only because no catalogue has been seeded yet (Phase 6).
+  data through RLS with locale fallback (requested → hotel default → en).
 
-Phases 3–9 (requests + translation, admin operations, ordering, hotel
-configuration, feedback/analytics, super admin, hardening) have not started.
+**Phase 3 (requests, free-text + translation, tracking, realtime) is
+complete** — including the spec's own headline end-to-end test, run for
+real against the live project:
+
+- An Azerbaijani free-text request ("Otağıma iki əlavə dəsmal gətirə
+  bilərsiniz?") is mock-translated, correctly routed to Housekeeping by
+  keyword (`routing_rules`), and created as a trackable request — verified
+  via `supabase/functions/translate-content` and
+  `apps/tourist/src/lib/departmentRouter.ts`.
+- Structured requests (e.g. Extra Towels, with quantity) work the same way
+  through `ServiceDetailScreen`.
+- The full guest journey — Request Received → Accepted → On the Way →
+  Completed — was driven by real staff accounts (Hotel A's admin and a
+  department-scoped Housekeeping staff member) updating `requests.status`,
+  and the guest's tracker screen updated live via Realtime with **no page
+  reload** at every step, matching the spec's most important end-to-end
+  test. The audit trail (`request_status_history`) and in-app
+  `notifications` were both populated automatically by the database
+  trigger, not the client.
+- Found and fixed in the process: guests had no RLS read access to
+  `routing_rules`, so free-text requests always fell back to the hotel's
+  default department regardless of keyword (migration
+  `00000000000012_guest_routing_rules_read.sql`).
+- "My Requests" (Active/Completed tabs) also updates live via Realtime.
+
+Phases 4–9 (admin operations, ordering, hotel configuration,
+feedback/analytics, super admin, hardening) have not started. Phase 3's
+guest-side flow is fully demonstrable, but nothing yet drives those status
+changes except direct database access — Phase 4 replaces that with a real
+staff UI.

@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { isTerminal, statusLabel } from "@room-aura/shared";
+import { isTerminal } from "@room-aura/shared";
 import { useGuestSession } from "../guest/GuestSessionContext";
 import { useMyRequests } from "../hooks/useMyRequests";
 import { card } from "../lib/styles";
+import { statusI18nKey } from "../lib/statusI18n";
 
 export default function MyRequestsScreen() {
   const { t, i18n } = useTranslation();
@@ -77,7 +78,7 @@ export default function MyRequestsScreen() {
                   whiteSpace: "nowrap",
                 }}
               >
-                {statusLabel(r.kind, r.status)}
+                {t(statusI18nKey(r.kind, r.status))}
               </span>
             </button>
           ))}

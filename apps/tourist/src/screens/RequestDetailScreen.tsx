@@ -5,9 +5,10 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
-import { canGuestCancel, statusLabel, trackerStepState, TRACKER_STEPS } from "@room-aura/shared";
+import { canGuestCancel, trackerStepState, TRACKER_STEPS } from "@room-aura/shared";
 import { useRequestDetail } from "../hooks/useRequestDetail";
 import { primaryButton, secondaryButton } from "../lib/styles";
+import { statusI18nKey } from "../lib/statusI18n";
 import { supabase } from "../supabase";
 
 export default function RequestDetailScreen() {
@@ -63,7 +64,7 @@ export default function RequestDetailScreen() {
 
       {isCancelled ? (
         <p style={{ textAlign: "center", color: "var(--ra-color-danger)", fontWeight: 600 }}>
-          {statusLabel(request.kind, "cancelled")}
+          {t(statusI18nKey(request.kind, "cancelled"))}
         </p>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: "var(--ra-space-3)" }}>
@@ -92,7 +93,7 @@ export default function RequestDetailScreen() {
                     color: state === "pending" ? "var(--ra-color-text-secondary)" : "var(--ra-color-text-primary)",
                   }}
                 >
-                  {statusLabel(request.kind, step)}
+                  {t(statusI18nKey(request.kind, step))}
                 </span>
               </div>
             );

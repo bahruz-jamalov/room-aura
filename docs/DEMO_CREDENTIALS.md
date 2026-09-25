@@ -27,7 +27,21 @@ Exists purely as a second tenant for the automated tenant-isolation test
 |---|---|---|
 | `admin@bosporus.demo` | hotel_admin | — (all departments) |
 
+## Catalogue (Hotel A only)
+
+A minimal Housekeeping category — Extra Towels and Room Cleaning — enough to
+exercise the structured-request flow. The full catalogue admin UI is Phase 6.
+
+## Free-text routing (Hotel A only)
+
+`routing_rules` keywords: `towel`, `clean`, `pillow` → Housekeeping;
+`air condition` → Maintenance; `transfer` → Transportation. Anything else
+falls back to `hotel_settings.freetext_department_id` → Guest Relations.
+
 ## Regenerating
 
-`pnpm seed` is idempotent — re-running it after schema changes is safe and
-won't duplicate hotels, departments, rooms or staff.
+`pnpm seed` is idempotent for hotels/departments/rooms/staff, but the
+Room 508 QR token and hotel-wide access code **rotate on every run** — check
+`scripts/.demo-ids.json` for the current values after seeding. The catalogue
+is only created once (skipped on later runs if the hotel already has any
+category).
