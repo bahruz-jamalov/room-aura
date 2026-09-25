@@ -114,6 +114,7 @@ other's data across every tenant table.
 | `pnpm db:diff` | Diff the linked project's schema against migrations |
 | `pnpm seed` | Create demo hotels, departments, rooms, staff (needs service role key) |
 | `pnpm test:isolation` | Automated tenant-isolation test (needs seed data) |
+| `pnpm test:anon-access` | Default-deny check with no session at all (needs no seed data) |
 
 ## Security notes
 
@@ -130,7 +131,9 @@ Phase 1 (foundation) is in progress — see
 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) §11 for the full phase plan.
 Done: schema + RLS pushed to a live Supabase project, both app shells build
 and typecheck, design tokens verified visually (incl. live RTL flip), a
-real staff-login screen exists. Pending: demo data seeded, automated
-tenant-isolation test run and green. Phases 2–9 (guest onboarding, requests,
+real staff-login screen exists, and the default-deny check
+(`pnpm test:anon-access`) passes 19/19 against the live database with zero
+seed data. Pending: demo data seeded, automated tenant-isolation test run
+and green. Phases 2–9 (guest onboarding, requests,
 admin operations, ordering, hotel configuration, feedback/analytics, super
 admin, hardening) have not started.

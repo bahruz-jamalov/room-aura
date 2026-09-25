@@ -20,7 +20,8 @@
     "db:diff": "supabase db diff",
     "db:test": "supabase test db",
     "seed": "tsx scripts/seed.ts",
-    "test:isolation": "tsx scripts/test-isolation.ts"
+    "test:isolation": "tsx scripts/test-isolation.ts",
+    "test:anon-access": "tsx scripts/test-anon-access.ts"
   },
   "devDependencies": {
     "@supabase/supabase-js": "^2.47.10",
