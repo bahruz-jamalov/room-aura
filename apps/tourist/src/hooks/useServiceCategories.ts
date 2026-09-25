@@ -4,15 +4,18 @@ import { resolveTranslation } from "../lib/resolveTranslation";
 
 export interface ServiceCategoryView {
   id: string;
+  categoryType: "standard" | "menu";
   icon: string | null;
   imageUrl: string | null;
   name: string;
   description: string | null;
 }
 
-/** service_categories where category_type = 'standard' — the guest-facing
- *  "How can we help you?" grid. Food & Drinks (category_type = 'menu') has
- *  its own screen, built alongside ordering in Phase 5. */
+/** Every active service_categories row, both types — the guest-facing
+ *  "How can we help you?" grid mixes ordinary categories (Housekeeping...)
+ *  with the single "Food & Drinks" tile (category_type = 'menu'), which
+ *  routes to /menu instead of /services/:id. See CategoryGrid.tsx and
+ *  docs/ARCHITECTURE.md's Home mockup. */
 export function useServiceCategories(locale: string, fallbackLocale: string) {
   const [categories, setCategories] = useState<ServiceCategoryView[]>([]);
   const [loading, setLoading] = useState(true);
@@ -23,8 +26,7 @@ export function useServiceCategories(locale: string, fallbackLocale: string) {
       setLoading(true);
       const { data: cats } = await supabase
         .from("service_categories")
-        .select("id, icon, image_url, sort_order")
-        .eq("category_type", "standard")
+        .select("id, category_type, icon, image_url, sort_order")
         .eq("is_active", true)
         .order("sort_order");
 
@@ -57,6 +59,7 @@ export function useServiceCategories(locale: string, fallbackLocale: string) {
           const resolved = resolveTranslation(byCategory.get(c.id) ?? [], locale, fallbackLocale);
           return {
             id: c.id,
+            categoryType: c.category_type,
             icon: c.icon,
             imageUrl: c.image_url,
             name: resolved?.name ?? "Untitled",

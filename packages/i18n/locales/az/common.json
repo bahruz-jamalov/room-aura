@@ -59,6 +59,9 @@
       "cancelled": "Ləğv edildi"
     }
   },
+  "menu": {
+    "title": "Yemək və İçki"
+  },
   "cart": {
     "title": "Səbət",
     "addToCart": "Səbətə əlavə et",

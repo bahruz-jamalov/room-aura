@@ -10,7 +10,7 @@ export default function CategoryGrid({ categories, trailing }: { categories: Ser
       {categories.map((cat) => (
         <button
           key={cat.id}
-          onClick={() => navigate(`/services/${cat.id}`)}
+          onClick={() => navigate(cat.categoryType === "menu" ? "/menu" : `/services/${cat.id}`)}
           style={{
             ...card,
             minHeight: 120,

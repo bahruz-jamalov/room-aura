@@ -59,6 +59,9 @@
       "cancelled": "Cancelado"
     }
   },
+  "menu": {
+    "title": "Comida y Bebidas"
+  },
   "cart": {
     "title": "Carrito",
     "addToCart": "Añadir al carrito",

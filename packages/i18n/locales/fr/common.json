@@ -59,6 +59,9 @@
       "cancelled": "Annulée"
     }
   },
+  "menu": {
+    "title": "Restauration"
+  },
   "cart": {
     "title": "Panier",
     "addToCart": "Ajouter au panier",

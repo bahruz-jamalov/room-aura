@@ -207,6 +207,106 @@ async function setFreetextDepartment(hotelId: string, departmentId: string): Pro
   console.log("  freetext default department set");
 }
 
+async function setFnbDepartment(hotelId: string, departmentId: string): Promise<void> {
+  const { error } = await admin.from("hotel_settings").update({ fnb_department_id: departmentId }).eq("hotel_id", hotelId);
+  if (error) throw error;
+  console.log("  F&B default department set");
+}
+
+/** The "Food & Drinks" tile in the Home grid — a service_categories row
+ *  with category_type='menu'. Tapping it opens /menu (menu_categories +
+ *  menu_items), not a services list. See docs/ARCHITECTURE.md's Home
+ *  mockup, which lists "Food & Drinks" alongside Housekeeping etc. */
+async function upsertMenuTile(hotelId: string, icon: string, translations: Record<string, { name: string }>) {
+  const { count } = await admin
+    .from("service_categories")
+    .select("id", { count: "exact", head: true })
+    .eq("hotel_id", hotelId)
+    .eq("category_type", "menu");
+  if (count && count > 0) {
+    console.log("  Food & Drinks tile already seeded, skipping");
+    return;
+  }
+  const { data: cat, error } = await admin
+    .from("service_categories")
+    .insert({ hotel_id: hotelId, category_type: "menu", icon })
+    .select("id")
+    .single();
+  if (error) throw error;
+  for (const [locale, t] of Object.entries(translations)) {
+    const { error: trError } = await admin
+      .from("service_category_translations")
+      .insert({ category_id: cat.id, locale, name: t.name });
+    if (trError) throw trError;
+  }
+  console.log("  Food & Drinks tile ready");
+}
+
+interface DemoMenuCategorySeed {
+  translations: Record<string, { name: string }>;
+  items: {
+    priceMinor: number;
+    currency: string;
+    prepMinutes?: number;
+    allergens?: string[];
+    translations: Record<string, { name: string; description?: string }>;
+  }[];
+}
+
+/** Coarse idempotency, same reasoning as upsertCatalogue. */
+async function upsertMenu(hotelId: string, categories: DemoMenuCategorySeed[]) {
+  const { count } = await admin
+    .from("menu_categories")
+    .select("id", { count: "exact", head: true })
+    .eq("hotel_id", hotelId);
+  if (count && count > 0) {
+    console.log("  menu already seeded, skipping");
+    return;
+  }
+
+  for (const cat of categories) {
+    const { data: catRow, error: catError } = await admin
+      .from("menu_categories")
+      .insert({ hotel_id: hotelId })
+      .select("id")
+      .single();
+    if (catError) throw catError;
+
+    for (const [locale, t] of Object.entries(cat.translations)) {
+      const { error: trError } = await admin
+        .from("menu_category_translations")
+        .insert({ menu_category_id: catRow.id, locale, name: t.name });
+      if (trError) throw trError;
+    }
+    console.log(`  menu category "${cat.translations.en?.name}" ready`);
+
+    for (const item of cat.items) {
+      const { data: itemRow, error: itemError } = await admin
+        .from("menu_items")
+        .insert({
+          hotel_id: hotelId,
+          menu_category_id: catRow.id,
+          price_minor: item.priceMinor,
+          currency: item.currency,
+          prep_minutes: item.prepMinutes ?? null,
+          allergens: item.allergens ?? [],
+          status: "available",
+        })
+        .select("id")
+        .single();
+      if (itemError) throw itemError;
+
+      for (const [locale, t] of Object.entries(item.translations)) {
+        const { error: trError } = await admin
+          .from("menu_item_translations")
+          .insert({ menu_item_id: itemRow.id, locale, name: t.name, description: t.description ?? null });
+        if (trError) throw trError;
+      }
+      console.log(`  menu item "${item.translations.en?.name}" ready`);
+    }
+  }
+}
+
 async function upsertRoutingRule(hotelId: string, keyword: string, departmentId: string, priority: number) {
   const { data: existing } = await admin
     .from("routing_rules")
@@ -401,6 +501,45 @@ async function main() {
           translations: {
             en: { name: "Room Cleaning" },
             az: { name: "Otağın təmizlənməsi" },
+          },
+        },
+      ],
+    },
+  ]);
+
+  // Phase 5 — ordering. "Club Sandwich, 25 AED" matches the spec's second
+  // end-to-end demo exactly.
+  await setFnbDepartment(hotelAId, hotelADepts["fnb"]);
+  await upsertMenuTile(hotelAId, "\u{1F37D}️", {
+    en: { name: "Food & Drinks" },
+    az: { name: "Yemək və İçki" },
+  });
+  await upsertMenu(hotelAId, [
+    {
+      translations: { en: { name: "Main Courses" }, az: { name: "Əsas yeməklər" } },
+      items: [
+        {
+          priceMinor: 2500,
+          currency: "AED",
+          prepMinutes: 15,
+          allergens: ["gluten", "dairy"],
+          translations: {
+            en: { name: "Club Sandwich", description: "Chicken, lettuce, tomato and cheese" },
+            az: { name: "Klub sendviçi", description: "Toyuq, kahı, pomidor və pendir" },
+          },
+        },
+      ],
+    },
+    {
+      translations: { en: { name: "Cold Drinks" }, az: { name: "Soyuq içkilər" } },
+      items: [
+        {
+          priceMinor: 800,
+          currency: "AED",
+          prepMinutes: 5,
+          translations: {
+            en: { name: "Fresh Orange Juice" },
+            az: { name: "Təzə portağal şirəsi" },
           },
         },
       ],

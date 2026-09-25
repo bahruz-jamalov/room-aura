@@ -36,6 +36,8 @@ export function useMyRequests(guestSessionId: string | null, locale: string, fal
 
     async function resolveDisplayText(rows: RequestRow[]): Promise<MyRequestSummary[]> {
       const serviceIds = [...new Set(rows.filter((r) => r.service_id).map((r) => r.service_id as string))];
+      const orderIds = rows.filter((r) => r.kind === "order").map((r) => r.id);
+
       let translationsByService = new Map<string, { locale: string; name: string }[]>();
       if (serviceIds.length > 0) {
         const { data: translations } = await supabase
@@ -50,6 +52,20 @@ export function useMyRequests(guestSessionId: string | null, locale: string, fal
         }
       }
 
+      let itemsByOrder = new Map<string, string[]>();
+      if (orderIds.length > 0) {
+        const { data: orderItems } = await supabase
+          .from("order_items")
+          .select("order_id, name_snapshot")
+          .in("order_id", orderIds);
+        itemsByOrder = new Map();
+        for (const oi of orderItems ?? []) {
+          const list = itemsByOrder.get(oi.order_id) ?? [];
+          list.push(oi.name_snapshot);
+          itemsByOrder.set(oi.order_id, list);
+        }
+      }
+
       return rows.map((r) => {
         let displayText = "Request";
         if (r.kind === "freetext" && r.original_text) {
@@ -58,7 +74,13 @@ export function useMyRequests(guestSessionId: string | null, locale: string, fal
           const resolved = resolveTranslation(translationsByService.get(r.service_id) ?? [], locale, fallbackLocale);
           displayText = resolved?.name ?? "Service request";
         } else if (r.kind === "order") {
-          displayText = "Order";
+          const names = itemsByOrder.get(r.id) ?? [];
+          displayText =
+            names.length === 0
+              ? "Order"
+              : names.length === 1
+                ? (names[0] ?? "Order")
+                : `${names[0] ?? "Order"} +${names.length - 1} more`;
         }
         return {
           id: r.id,

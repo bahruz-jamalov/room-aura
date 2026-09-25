@@ -4,7 +4,7 @@
 // the same table the database trigger enforces, so this can never offer an
 // action the backend would reject.
 import { useState } from "react";
-import { ALLOWED_TRANSITIONS, type RequestStatus } from "@room-aura/shared";
+import { ALLOWED_TRANSITIONS, formatMoney, type RequestStatus } from "@room-aura/shared";
 import { useAuth } from "../auth/AuthContext";
 import { useRequestHistory } from "../hooks/useRequestHistory";
 import { useStaffInDepartment } from "../hooks/useStaffInDepartment";
@@ -111,6 +111,17 @@ export default function RequestDetailPanel({ request, onClose }: { request: Queu
       <Field label="Department" value={request.departmentName} />
       {request.serviceName && <Field label="Service" value={`${request.serviceName} × ${request.quantity}`} />}
       {request.guestNote && <Field label="Guest note" value={request.guestNote} />}
+      {request.kind === "order" && (
+        <>
+          {request.orderSummary && <Field label="Items" value={request.orderSummary} />}
+          {request.orderTotalMinor != null && request.orderCurrency && (
+            <Field label="Total" value={formatMoney(request.orderTotalMinor, request.orderCurrency)} />
+          )}
+          {request.orderPaymentMethod && (
+            <Field label="Payment method" value={request.orderPaymentMethod === "charge_to_room" ? "Charge to Room" : "Pay at Hotel"} />
+          )}
+        </>
+      )}
 
       {request.kind === "freetext" && (
         <div style={{ margin: "var(--ra-space-4) 0" }}>

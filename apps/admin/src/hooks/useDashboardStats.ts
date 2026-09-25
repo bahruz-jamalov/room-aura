@@ -6,6 +6,9 @@ export interface DashboardStats {
   inProgressCount: number;
   completedToday: number;
   avgResponseMinutes: number | null;
+  ordersToday: number;
+  revenueTodayMinor: number;
+  revenueCurrency: string | null;
 }
 
 function startOfToday(): string {
@@ -28,7 +31,7 @@ export function useDashboardStats() {
       const since = startOfToday();
       const { data } = await supabase
         .from("requests")
-        .select("status, created_at, accepted_at, completed_at");
+        .select("id, kind, status, created_at, accepted_at, completed_at");
       if (cancelled || !data) return;
 
       const newCount = data.filter((r) => r.status === "new").length;
@@ -41,13 +44,39 @@ export function useDashboardStats() {
       const avgResponseMinutes =
         responseTimes.length > 0 ? Math.round(responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length) : null;
 
-      setStats({ newCount, inProgressCount, completedToday, avgResponseMinutes });
+      // "Revenue" is the value of orders placed through ROOM-AURA, not money
+      // ROOM-AURA processed — the hotel's own system handles settlement
+      // (docs/ARCHITECTURE.md §10). Cancelled orders don't count.
+      const orderIdsToday = data
+        .filter((r) => r.kind === "order" && r.created_at >= since && r.status !== "cancelled")
+        .map((r) => r.id);
+      let revenueTodayMinor = 0;
+      let revenueCurrency: string | null = null;
+      if (orderIdsToday.length > 0) {
+        const { data: orders } = await supabase.from("orders").select("total_minor, currency").in("id", orderIdsToday);
+        for (const o of orders ?? []) {
+          revenueTodayMinor += o.total_minor;
+          revenueCurrency = o.currency;
+        }
+      }
+
+      if (cancelled) return;
+      setStats({
+        newCount,
+        inProgressCount,
+        completedToday,
+        avgResponseMinutes,
+        ordersToday: orderIdsToday.length,
+        revenueTodayMinor,
+        revenueCurrency,
+      });
     }
     void load();
 
     const channel = supabase
       .channel("dashboard-stats")
       .on("postgres_changes", { event: "*", schema: "public", table: "requests" }, () => void load())
+      .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, () => void load())
       .subscribe();
 
     return () => {

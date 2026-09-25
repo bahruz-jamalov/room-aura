@@ -59,6 +59,9 @@
       "cancelled": "İptal Edildi"
     }
   },
+  "menu": {
+    "title": "Yiyecek ve İçecek"
+  },
   "cart": {
     "title": "Sepet",
     "addToCart": "Sepete Ekle",

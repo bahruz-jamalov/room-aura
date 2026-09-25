@@ -59,6 +59,9 @@
       "cancelled": "已取消"
     }
   },
+  "menu": {
+    "title": "餐饮"
+  },
   "cart": {
     "title": "购物车",
     "addToCart": "加入购物车",

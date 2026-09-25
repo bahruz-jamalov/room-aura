@@ -1,9 +1,9 @@
-// KPI cards cover only what's real today (operational counts from
-// `requests`). Orders/Revenue, Guest Rating and Customer Effort Score from
-// the spec's dashboard are commercial/feedback metrics that don't exist
-// until Phase 5 (ordering) and Phase 7 (feedback) — showing them now would
-// mean fabricating zeros, so they're left out rather than faked.
+// KPI cards cover what's real: operational counts from `requests`, and now
+// (Phase 5) Orders Today / Revenue Today from real orders. Guest Rating and
+// Customer Effort Score still don't exist until Phase 7 (feedback) — shown
+// as fake zeros would be worse than not shown at all, so they stay out.
 import { useNavigate } from "react-router-dom";
+import { formatMoney } from "@room-aura/shared";
 import { useAuth } from "../auth/AuthContext";
 import { useDashboardStats } from "../hooks/useDashboardStats";
 import { useRequestsQueue } from "../hooks/useRequestsQueue";
@@ -29,6 +29,17 @@ export default function DashboardScreen() {
           label="Avg Response Time"
           value={stats?.avgResponseMinutes != null ? `${stats.avgResponseMinutes} min` : "—"}
           accent="var(--ra-color-accent)"
+        />
+        <Kpi label="Orders Today" value={stats?.ordersToday ?? "…"} />
+        <Kpi
+          label="Revenue Today"
+          value={
+            stats && stats.revenueCurrency
+              ? formatMoney(stats.revenueTodayMinor, stats.revenueCurrency)
+              : stats
+                ? "—"
+                : "…"
+          }
         />
       </div>
 

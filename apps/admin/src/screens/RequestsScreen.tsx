@@ -101,7 +101,7 @@ export default function RequestsScreen() {
                   <td style={{ padding: "var(--ra-space-3)", fontWeight: 600 }}>{r.number}</td>
                   <td style={{ padding: "var(--ra-space-3)" }}>{r.roomNumber}</td>
                   <td style={{ padding: "var(--ra-space-3)", maxWidth: 280, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {r.serviceName ?? r.translatedText ?? r.originalText ?? "—"}
+                    {r.serviceName ?? r.orderSummary ?? r.translatedText ?? r.originalText ?? "—"}
                   </td>
                   <td style={{ padding: "var(--ra-space-3)" }}>{r.departmentName}</td>
                   <td style={{ padding: "var(--ra-space-3)", color: "var(--ra-color-text-secondary)" }}>
