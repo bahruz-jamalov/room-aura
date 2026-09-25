@@ -227,5 +227,40 @@ management) is complete** — driven by real staff clicks, not scripts:
   `00000000000013_history_realtime.sql`), so the audit timeline only
   showed what existed at mount time.
 
-Phases 5–9 (ordering, hotel configuration, feedback/analytics, super admin,
+**Phase 5 (food ordering: cart, checkout, admin order handling) is
+complete** — verified against the live project with real orders placed
+through the UI, not scripts:
+
+- Guest side: `Home → Food & Drinks → category → item → Cart → place order`
+  works end to end, using the same unified `requests` table (`kind: 'order'`)
+  and status tracker as Phase 3/4, with an `orders` + `order_items` extension
+  for items, total, and payment method (Charge to Room / Pay at Hotel).
+  Cart state lives in `CartContext` (in-memory, no persistence by design).
+- The `create_order` RPC does the atomic multi-table write (request + order +
+  order_items, price/name snapshotted server-side from `menu_items` —
+  the client never sends a price) and was hardened through three real bugs
+  found while placing live orders, each fixed with its own migration:
+  ambiguous `currency` column reference (`00000000000015`), a `RETURNS
+  TABLE` type mismatch between `orders.currency` (`char(3)`) and the
+  declared `text` column (`00000000000016`), and — the subtlest — the
+  function's own `UPDATE orders SET currency = ...` being silently
+  filtered to zero rows by RLS because the function ran `SECURITY INVOKER`
+  and guests have no UPDATE policy on `orders` by design; fixed by making
+  the function `SECURITY DEFINER` (`00000000000018`), which does not widen
+  what a guest can do since it still resolves hotel/room/session
+  exclusively from the caller's own `guest_hotel_id()`/`guest_room_id()`/
+  `guest_session_id()`.
+- Re-verified after the fix: a fresh order (RA-1009, Fresh Orange Juice)
+  correctly shows `AED 8.00`, not the `USD` placeholder.
+- Admin side: Hotel A's admin (department-agnostic `hotel_admin` role) sees
+  order-kind requests routed to Food & Beverage in the same Requests queue,
+  with an Items/Total/Payment method panel, and drove the same
+  New → Accepted → In Progress → On the Way → Completed cycle used for
+  service requests — the audit timeline recorded all four transitions
+  correctly. Dashboard KPIs gained "Orders Today" and "Revenue Today",
+  computed live from `orders`.
+- Regression suites re-run after the `SECURITY DEFINER` change and still
+  pass: `pnpm test:anon-access` (19/19), `pnpm test:isolation` (40/40).
+
+Phases 6–9 (hotel configuration, feedback/analytics, super admin,
 hardening) have not started.
