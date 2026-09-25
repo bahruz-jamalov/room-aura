@@ -82,7 +82,11 @@ export default function RequestDetailPanel({ request, onClose }: { request: Queu
     <div
       style={{
         position: "fixed",
-        top: 0,
+        // See SidePanel.tsx: starts below AdminLayout's TopBar (~43px) so
+        // the topbar (raised above --ra-z-modal for the Sign-out fix) can't
+        // paint over this panel's own title/close button and swallow the
+        // click — same bug, found while testing Phase 6's SidePanel.
+        top: 44,
         right: 0,
         bottom: 0,
         width: 420,

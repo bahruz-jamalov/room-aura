@@ -7,6 +7,7 @@ import DashboardScreen from "./screens/DashboardScreen";
 import DepartmentsScreen from "./screens/DepartmentsScreen";
 import RequestsScreen from "./screens/RequestsScreen";
 import RoomsScreen from "./screens/RoomsScreen";
+import ServicesScreen from "./screens/ServicesScreen";
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
           <Route element={<AdminLayout />}>
             <Route path="/dashboard" element={<DashboardScreen />} />
             <Route path="/requests" element={<RequestsScreen />} />
+            <Route path="/services" element={<ServicesScreen />} />
             <Route
               path="/departments"
               element={

@@ -8,7 +8,12 @@ export default function SidePanel({ title, onClose, children }: { title: string;
     <div
       style={{
         position: "fixed",
-        top: 0,
+        // Starts below AdminLayout's TopBar (~43px), which was deliberately
+        // raised above --ra-z-modal in Phase 4 so its Sign-out button stays
+        // reachable while a panel is open. Starting this panel at top: 0
+        // would put its own title/close button in that same band, where
+        // the topbar paints over it and swallows the click.
+        top: 44,
         right: 0,
         bottom: 0,
         width: 420,
