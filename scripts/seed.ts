@@ -11,6 +11,7 @@
 // before inserting, and upserts settings-style rows.
 
 import { createClient } from "@supabase/supabase-js";
+import { createHash, randomBytes, randomInt } from "node:crypto";
 import { writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import {
@@ -100,8 +101,12 @@ async function upsertDepartments(
   return map;
 }
 
-async function upsertRooms(hotelId: string, rooms: readonly { floorNumber: number; number: string }[]) {
+async function upsertRooms(
+  hotelId: string,
+  rooms: readonly { floorNumber: number; number: string }[],
+): Promise<Record<string, string>> {
   const floorIds: Record<number, string> = {};
+  const roomIds: Record<string, string> = {};
   for (const room of rooms) {
     if (!floorIds[room.floorNumber]) {
       const { data: existingFloor } = await admin
@@ -129,14 +134,68 @@ async function upsertRooms(hotelId: string, rooms: readonly { floorNumber: numbe
       .eq("hotel_id", hotelId)
       .eq("number", room.number)
       .maybeSingle();
-    if (!existingRoom) {
-      const { error } = await admin
+    if (existingRoom) {
+      roomIds[room.number] = existingRoom.id as string;
+    } else {
+      const { data, error } = await admin
         .from("rooms")
-        .insert({ hotel_id: hotelId, floor_id: floorIds[room.floorNumber], number: room.number });
+        .insert({ hotel_id: hotelId, floor_id: floorIds[room.floorNumber], number: room.number })
+        .select("id")
+        .single();
       if (error) throw error;
+      roomIds[room.number] = data.id as string;
     }
   }
   console.log(`  ${rooms.length} room(s) ready`);
+  return roomIds;
+}
+
+function sha256Hex(input: string): string {
+  return createHash("sha256").update(input).digest("hex");
+}
+
+/** Human-typeable: excludes ambiguous characters (0/O, 1/I). */
+function randomAccessCode(length = 8): string {
+  const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let out = "";
+  for (let i = 0; i < length; i++) out += alphabet[randomInt(alphabet.length)];
+  return out;
+}
+
+type AccessKind = "hotel" | "room" | "access_code";
+
+/**
+ * Rotates the token on every run (re-seeding always produces a fresh, valid
+ * raw value in .demo-ids.json) rather than trying to recover an old raw
+ * token — which is impossible by design, since only the hash is stored.
+ */
+async function upsertAccessToken(
+  hotelId: string,
+  kind: AccessKind,
+  roomId: string | null,
+  label: string,
+  rawToken: string,
+): Promise<void> {
+  const tokenHash = sha256Hex(rawToken);
+  const { data: existing } = await admin
+    .from("access_tokens")
+    .select("id")
+    .eq("hotel_id", hotelId)
+    .eq("label", label)
+    .maybeSingle();
+  if (existing) {
+    const { error } = await admin
+      .from("access_tokens")
+      .update({ token_hash: tokenHash, kind, room_id: roomId, is_active: true })
+      .eq("id", existing.id);
+    if (error) throw error;
+  } else {
+    const { error } = await admin
+      .from("access_tokens")
+      .insert({ hotel_id: hotelId, room_id: roomId, kind, token_hash: tokenHash, label, is_active: true });
+    if (error) throw error;
+  }
+  console.log(`  access token "${label}" ready`);
 }
 
 async function getOrCreateAuthUser(email: string): Promise<string> {
@@ -187,8 +246,19 @@ async function main() {
   console.log("Seeding Hotel A — Aura Grand Hotel");
   const hotelAId = await upsertHotel(HOTEL_A);
   const hotelADepts = await upsertDepartments(hotelAId, HOTEL_A_DEPARTMENTS);
-  await upsertRooms(hotelAId, HOTEL_A_ROOMS);
+  const hotelARooms = await upsertRooms(hotelAId, HOTEL_A_ROOMS);
   await upsertStaff(hotelAId, hotelADepts, HOTEL_A_STAFF);
+
+  // Room 508's QR — the room used in the spec's end-to-end demo. The QR
+  // encodes the tourist app's /j/<token> URL; scanning it with any phone
+  // camera opens that URL directly, no in-app scanner needed.
+  const room508Token = randomBytes(24).toString("base64url");
+  await upsertAccessToken(hotelAId, "room", hotelARooms["508"], "Room 508 QR (demo)", room508Token);
+
+  // A hotel-wide code for the "Enter Access Code" path — short and
+  // human-typeable, since a guest has to read it off a card, not scan it.
+  const hotelACode = randomAccessCode();
+  await upsertAccessToken(hotelAId, "access_code", null, "Hotel-wide access code (demo)", hotelACode);
 
   console.log("\nSeeding Hotel B — Bosporus Hotel");
   const hotelBId = await upsertHotel(HOTEL_B);
@@ -196,14 +266,23 @@ async function main() {
   await upsertRooms(hotelBId, HOTEL_B_ROOMS);
   await upsertStaff(hotelBId, hotelBDepts, HOTEL_B_STAFF);
 
-  // Non-secret IDs only (no keys, no passwords) — lets test-isolation.ts
-  // target a real cross-tenant ID without itself needing the service role.
+  // Non-secret IDs, PLUS the raw access tokens — these last two ARE
+  // sensitive (they're literally what a guest scans/types to get in), but
+  // this file is gitignored and lives only on the seeder's machine. This is
+  // the one and only place the raw values exist outside a guest's own QR
+  // sticker/card — the database stores only their hash, by design.
   const outPath = fileURLToPath(new URL("./.demo-ids.json", import.meta.url));
   writeFileSync(
     outPath,
     JSON.stringify(
       {
-        hotelA: { id: hotelAId, departments: hotelADepts },
+        hotelA: {
+          id: hotelAId,
+          departments: hotelADepts,
+          rooms: hotelARooms,
+          room508Token,
+          accessCode: hotelACode,
+        },
         hotelB: { id: hotelBId, departments: hotelBDepts },
       },
       null,

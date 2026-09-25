@@ -18,7 +18,8 @@ build/
 supabase/.branches
 supabase/.temp
 
-# Seed script output (non-secret IDs, but generated + machine-specific)
+# Seed script output — IDs plus the raw demo QR token/access code (the DB
+# only ever stores their hash, so this file is the one place they exist)
 scripts/.demo-ids.json
 
 # Editor / OS
