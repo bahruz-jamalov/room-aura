@@ -127,13 +127,22 @@ other's data across every tenant table.
 
 ## Project status
 
-Phase 1 (foundation) is in progress — see
+**Phase 1 (foundation) is complete** — see
 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) §11 for the full phase plan.
-Done: schema + RLS pushed to a live Supabase project, both app shells build
-and typecheck, design tokens verified visually (incl. live RTL flip), a
-real staff-login screen exists, and the default-deny check
-(`pnpm test:anon-access`) passes 19/19 against the live database with zero
-seed data. Pending: demo data seeded, automated tenant-isolation test run
-and green. Phases 2–9 (guest onboarding, requests,
-admin operations, ordering, hotel configuration, feedback/analytics, super
-admin, hardening) have not started.
+Verified against the live hosted Supabase project, not just asserted:
+
+- Schema + RLS pushed; `pnpm test:anon-access` passes 19/19 with zero seed
+  data (only the language catalogue is publicly readable).
+- Demo data seeded (Aura Grand Hotel + Bosporus Hotel — see
+  [docs/DEMO_CREDENTIALS.md](docs/DEMO_CREDENTIALS.md)).
+- `pnpm test:isolation` passes 40/40 with real staff JWTs: Hotel A and
+  Hotel B cannot read or write each other's data, across every tenant
+  table, in either direction — the Phase 1 exit criterion.
+- Real staff login verified in the browser: signing in as Hotel A's admin
+  resolves their hotel/role/department entirely through RLS, with no
+  hotel ID chosen by the client.
+- Both apps build and typecheck; design tokens verified visually, including
+  a live RTL flip for Arabic.
+
+Phases 2–9 (guest onboarding, requests, admin operations, ordering, hotel
+configuration, feedback/analytics, super admin, hardening) have not started.
