@@ -403,4 +403,71 @@ third hotel through the platform UI, not by seeding fake data:
 - Regression suites re-run and still pass: `pnpm test:anon-access`
   (19/19), `pnpm test:isolation` (40/40).
 
-Phase 9 (hardening) has not started.
+**Phase 9 (hardening) is complete** — tenant isolation suite, role tests,
+an RTL pass, and a real (not hypothetical) security fix, all verified
+against the live project:
+
+- New automated role-permission suite, `pnpm test:roles`
+  (`scripts/test-roles.ts`), signs in as hotel_admin, manager, and a new
+  demo manager account (Marcus Chen) alongside the existing staff account
+  (Sarah), and checks every cell of `docs/ARCHITECTURE.md` section 7's
+  roles × department matrix directly against RLS — not just what the UI
+  shows. 24 checks, all passing.
+- **Found a systemic RLS bug while writing that suite**: two of its very
+  first checks failed — a plain Housekeeping staff account could INSERT a
+  new `service_categories` row and a new `departments` row, both of which
+  should be admin/manager only. Traced it to every one of the schema's
+  14 "admin/manager writes own hotel X" (and "hotel admin manages X")
+  policies: each had a `USING` clause that correctly required the right
+  role, but a `WITH CHECK` clause that only verified `hotel_id` — never
+  the role. This didn't break UPDATE/DELETE (Postgres gates those via
+  `USING` against the existing row first, which was always correct) but
+  it did break every INSERT path, since INSERT has no existing row and
+  `WITH CHECK` is the only gate. Two of the fourteen were more than a
+  catalogue-editing nuisance: **any staff member could mint a brand new
+  guest-facing QR/access code** (`access_tokens`, meant to be hotel_admin
+  only, not even manager), and **any staff member could insert an
+  arbitrary new roster row with `role = 'hotel_admin'`** (`staff_users`,
+  a privilege-escalation path). Fixed in migration `00000000000022` by
+  adding the matching role check to each policy's `WITH CHECK` clause.
+  Re-ran the role suite (24/24) plus both existing regression suites
+  (19/19, 40/40) after the fix — all green, no legitimate admin/manager
+  write broke. Cleaned up two orphaned rows the original (pre-fix) test
+  run had left behind, which — fittingly — could only be deleted by an
+  admin, since `DELETE` was never affected by the bug.
+- **Role-matrix correction**: found while building the test suite's
+  expectations that Phase 6 had over-restricted Rooms/Departments —
+  section 7 lists them as "read" for plain staff, same as Services/Menu,
+  but the nav item and route were hidden/redirected entirely. Fixed
+  `AdminLayout` and both screens to match Services/Menu's pattern
+  (visible to everyone, edit controls gated on `canManageRoomsAndDepartments`).
+- **RTL pass**: switched the guest app to Arabic and verified
+  `dir="rtl"`/`lang="ar"` apply at the document level and the layout
+  genuinely mirrors (bottom nav order, card grid direction). This
+  surfaced two real gaps, both fixed: (1) the demo catalogue only had
+  EN/AZ translations, so Arabic (and every other of the 9 launch
+  languages) silently fell back to English for category/service/menu-item
+  names — backfilled Arabic translations for the seeded catalogue via the
+  Phase 6 admin UI's own translation editor, which doubled as another
+  live test of that feature; (2) a `"Free"` price label and about a dozen
+  other UI strings (an "or" divider, hotel-detail field labels, "Sold
+  Out", a couple of error messages, a "Request not found" message, a
+  data fallback) were hardcoded English, bypassing i18next entirely —
+  added the missing keys across all 9 locale files and fixed every call
+  site.
+- **Responsive pass**: checked the admin app at a 375px mobile viewport
+  and confirmed it is, as designed, not responsive — the roles table
+  (section 1) explicitly scopes Hotel Admin/Super Admin as
+  desktop/tablet-only, unlike the guest app, which is mobile-first by
+  design and already verified at every phase.
+- Regression suites, run one final time together after every fix in this
+  phase: `pnpm test:anon-access` (19/19), `pnpm test:isolation` (40/40),
+  `pnpm test:roles` (24/24) — 83 automated checks, all green.
+
+Automated E2E of the two demo flows was explicitly scoped out for this
+pass (no CI pipeline or E2E framework exists yet, and introducing one
+felt like more infrastructure than a pilot-stage project needs right
+now) — end-to-end coverage instead comes from the live, browser-driven
+verification performed throughout every phase of this project.
+
+All 9 phases of the original plan are now complete.

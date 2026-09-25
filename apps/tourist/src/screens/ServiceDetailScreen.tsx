@@ -64,7 +64,7 @@ export default function ServiceDetailScreen() {
         allowsQuantity: svc.allows_quantity,
         maxQuantity: svc.max_quantity,
         allowsNote: svc.allows_note,
-        name: resolved?.name ?? "Untitled",
+        name: resolved?.name ?? t("common.untitled"),
         description: resolved?.description ?? null,
       });
     }
@@ -96,7 +96,7 @@ export default function ServiceDetailScreen() {
       .single();
 
     if (insertError || !data) {
-      setError(insertError?.message ?? "Something went wrong. Please try again.");
+      setError(insertError?.message ?? t("common.genericError"));
       setSubmitting(false);
       return;
     }
@@ -134,7 +134,7 @@ export default function ServiceDetailScreen() {
       <h1 style={{ fontSize: "var(--ra-text-2xl)", margin: 0 }}>{service.name}</h1>
       {service.description && <p style={{ color: "var(--ra-color-text-secondary)", margin: 0 }}>{service.description}</p>}
       <p style={{ fontWeight: 600, color: "var(--ra-color-accent)", margin: 0 }}>
-        {service.isFree ? "Free" : formatMoney(service.priceMinor, service.currency, i18n.language)}
+        {service.isFree ? t("common.free") : formatMoney(service.priceMinor, service.currency, i18n.language)}
         {service.expectedMinutes && (
           <span style={{ color: "var(--ra-color-text-secondary)", fontWeight: 400 }}>
             {" "}

@@ -16,7 +16,11 @@
     "loading": "Yüklənir…",
     "optional": "İstəyə bağlı",
     "note": "Qeyd",
-    "minutes": "dəqiqə"
+    "minutes": "dəqiqə",
+    "free": "Pulsuz",
+    "or": "və ya",
+    "genericError": "Xəta baş verdi. Yenidən cəhd edin.",
+    "untitled": "Adsız"
   },
   "onboarding": {
     "chooseLanguage": "Dilinizi seçin",
@@ -24,7 +28,8 @@
     "scanQr": "Otel/Otaq QR kodunu skan edin",
     "enterCode": "Giriş kodunu daxil edin",
     "connecting": "Qoşulur…",
-    "invalidCode": "Bu kod düzgün deyil. Zəhmət olmasa qəbulla əlaqə saxlayın."
+    "invalidCode": "Bu kod düzgün deyil. Zəhmət olmasa qəbulla əlaqə saxlayın.",
+    "scanInstructions": "Telefonunuzun kamerasını otağınızdakı və ya qəbulda olan QR koda tutun."
   },
   "home": {
     "welcomeTo": "Xoş gəldiniz",
@@ -39,7 +44,9 @@
     "addNote": "Qeyd əlavə et (istəyə bağlı)",
     "otherRequest": "Digər sorğu",
     "whatDoYouNeed": "Nəyə ehtiyacınız var?",
-    "typeInYourLanguage": "Sorğunuzu öz dilinizdə yazın"
+    "typeInYourLanguage": "Sorğunuzu öz dilinizdə yazın",
+    "notFound": "Sorğu tapılmadı.",
+    "noDepartmentConfigured": "Bu otel hələ bunun hara göndəriləcəyini konfiqurasiya etməyib. Zəhmət olmasa qəbulla əlaqə saxlayın."
   },
   "status": {
     "service": {
@@ -60,7 +67,14 @@
     }
   },
   "menu": {
-    "title": "Yemək və İçki"
+    "title": "Yemək və İçki",
+    "soldOut": "Bitib"
+  },
+  "hotel": {
+    "address": "Ünvan",
+    "phone": "Telefon",
+    "checkin": "Giriş",
+    "checkout": "Çıxış"
   },
   "cart": {
     "title": "Səbət",

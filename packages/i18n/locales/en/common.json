@@ -16,7 +16,11 @@
     "loading": "Loading…",
     "optional": "Optional",
     "note": "Note",
-    "minutes": "minutes"
+    "minutes": "minutes",
+    "free": "Free",
+    "or": "or",
+    "genericError": "Something went wrong. Please try again.",
+    "untitled": "Untitled"
   },
   "onboarding": {
     "chooseLanguage": "Choose your language",
@@ -24,7 +28,8 @@
     "scanQr": "Scan Hotel/Room QR",
     "enterCode": "Enter Access Code",
     "connecting": "Connecting…",
-    "invalidCode": "That code isn't valid. Please check with reception."
+    "invalidCode": "That code isn't valid. Please check with reception.",
+    "scanInstructions": "Point your phone's camera at the QR code in your room or at reception."
   },
   "home": {
     "welcomeTo": "Welcome to",
@@ -39,7 +44,9 @@
     "addNote": "Add a note (optional)",
     "otherRequest": "Other Request",
     "whatDoYouNeed": "What do you need?",
-    "typeInYourLanguage": "Type your request in your own language"
+    "typeInYourLanguage": "Type your request in your own language",
+    "notFound": "Request not found.",
+    "noDepartmentConfigured": "This hotel hasn't configured where to send this yet. Please contact reception."
   },
   "status": {
     "service": {
@@ -60,7 +67,14 @@
     }
   },
   "menu": {
-    "title": "Food & Drinks"
+    "title": "Food & Drinks",
+    "soldOut": "Sold Out"
+  },
+  "hotel": {
+    "address": "Address",
+    "phone": "Phone",
+    "checkin": "Check-in",
+    "checkout": "Check-out"
   },
   "cart": {
     "title": "Cart",

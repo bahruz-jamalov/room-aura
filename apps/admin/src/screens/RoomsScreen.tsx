@@ -1,8 +1,11 @@
 // /rooms — floors, rooms, and live occupancy (docs/ARCHITECTURE.md section
 // 6: "floors, rooms, active guest session, access status"). Access token
 // status itself lives on the dedicated /access screen; this shows just
-// whether a room currently has a live guest session.
+// whether a room currently has a live guest session. Visible to every
+// role; only admin/manager get edit controls, matching the "read" cell in
+// the roles matrix (same visibility rule as Services/Menu/Departments).
 import { useState } from "react";
+import { permissions } from "@room-aura/shared";
 import { useAuth } from "../auth/AuthContext";
 import SidePanel, { FormField } from "../components/SidePanel";
 import { useFloorsAdmin, type AdminFloor } from "../hooks/useFloorsAdmin";
@@ -12,6 +15,7 @@ import { supabase } from "../supabase";
 
 export default function RoomsScreen() {
   const { staff } = useAuth();
+  const canEdit = staff ? permissions.canManageRoomsAndDepartments(staff) : false;
   const { floors, loading: floorsLoading, reload: reloadFloors } = useFloorsAdmin();
   const { rooms, loading: roomsLoading, reload: reloadRooms } = useRoomsAdmin();
   const [editingFloor, setEditingFloor] = useState<AdminFloor | "new" | null>(null);
@@ -56,9 +60,11 @@ export default function RoomsScreen() {
 
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "var(--ra-space-6) 0 var(--ra-space-3)" }}>
         <h2 style={{ fontSize: "var(--ra-text-lg)", margin: 0 }}>Floors</h2>
-        <button style={secondaryButton} onClick={() => setEditingFloor("new")}>
-          + Add Floor
-        </button>
+        {canEdit && (
+          <button style={secondaryButton} onClick={() => setEditingFloor("new")}>
+            + Add Floor
+          </button>
+        )}
       </div>
       <div style={{ ...card, overflow: "hidden" }}>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "var(--ra-text-sm)" }}>
@@ -90,12 +96,16 @@ export default function RoomsScreen() {
                   <td style={{ padding: "var(--ra-space-3)", fontWeight: 600 }}>{f.number}</td>
                   <td style={{ padding: "var(--ra-space-3)" }}>{f.label ?? "—"}</td>
                   <td style={{ padding: "var(--ra-space-3)", textAlign: "right", whiteSpace: "nowrap" }}>
-                    <button style={{ ...secondaryButton, marginRight: "var(--ra-space-2)" }} onClick={() => setEditingFloor(f)}>
-                      Edit
-                    </button>
-                    <button style={dangerButton} onClick={() => void handleDeleteFloor(f)}>
-                      Delete
-                    </button>
+                    {canEdit && (
+                      <>
+                        <button style={{ ...secondaryButton, marginRight: "var(--ra-space-2)" }} onClick={() => setEditingFloor(f)}>
+                          Edit
+                        </button>
+                        <button style={dangerButton} onClick={() => void handleDeleteFloor(f)}>
+                          Delete
+                        </button>
+                      </>
+                    )}
                   </td>
                 </tr>
               ))
@@ -106,9 +116,11 @@ export default function RoomsScreen() {
 
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "var(--ra-space-6) 0 var(--ra-space-3)" }}>
         <h2 style={{ fontSize: "var(--ra-text-lg)", margin: 0 }}>Rooms</h2>
-        <button style={primaryButton} onClick={() => setEditingRoom("new")}>
-          + Add Room
-        </button>
+        {canEdit && (
+          <button style={primaryButton} onClick={() => setEditingRoom("new")}>
+            + Add Room
+          </button>
+        )}
       </div>
       <div style={{ ...card, overflow: "hidden" }}>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "var(--ra-text-sm)" }}>
@@ -148,12 +160,16 @@ export default function RoomsScreen() {
                     )}
                   </td>
                   <td style={{ padding: "var(--ra-space-3)", textAlign: "right", whiteSpace: "nowrap" }}>
-                    <button style={{ ...secondaryButton, marginRight: "var(--ra-space-2)" }} onClick={() => setEditingRoom(r)}>
-                      Edit
-                    </button>
-                    <button style={dangerButton} onClick={() => void handleDeleteRoom(r)}>
-                      Delete
-                    </button>
+                    {canEdit && (
+                      <>
+                        <button style={{ ...secondaryButton, marginRight: "var(--ra-space-2)" }} onClick={() => setEditingRoom(r)}>
+                          Edit
+                        </button>
+                        <button style={dangerButton} onClick={() => void handleDeleteRoom(r)}>
+                          Delete
+                        </button>
+                      </>
+                    )}
                   </td>
                 </tr>
               ))

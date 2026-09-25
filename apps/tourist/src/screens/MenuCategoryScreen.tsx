@@ -77,7 +77,7 @@ export default function MenuCategoryScreen() {
                   }
                   style={{ ...primaryButton, width: "100%", marginTop: "var(--ra-space-3)" }}
                 >
-                  {soldOut ? "Sold Out" : inCart ? `${t("cart.addToCart")} (${inCart.quantity})` : t("cart.addToCart")}
+                  {soldOut ? t("menu.soldOut") : inCart ? `${t("cart.addToCart")} (${inCart.quantity})` : t("cart.addToCart")}
                 </button>
               </div>
             );

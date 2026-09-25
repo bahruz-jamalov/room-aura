@@ -30,13 +30,13 @@ export default function ConnectScreen() {
         <div style={{ fontSize: 40, marginBottom: "var(--ra-space-2)" }}>{"\u{1F4F7}"}</div>
         <p style={{ margin: 0, color: "var(--ra-color-text-secondary)" }}>{t("onboarding.scanQr")}</p>
         <p style={{ fontSize: "var(--ra-text-sm)", color: "var(--ra-color-text-secondary)" }}>
-          Point your phone's camera at the QR code in your room or at reception.
+          {t("onboarding.scanInstructions")}
         </p>
       </div>
 
       <div style={{ display: "flex", alignItems: "center", gap: "var(--ra-space-3)" }}>
         <div style={{ flex: 1, height: 1, background: "var(--ra-color-border)" }} />
-        <span style={{ color: "var(--ra-color-text-secondary)", fontSize: "var(--ra-text-sm)" }}>or</span>
+        <span style={{ color: "var(--ra-color-text-secondary)", fontSize: "var(--ra-text-sm)" }}>{t("common.or")}</span>
         <div style={{ flex: 1, height: 1, background: "var(--ra-color-border)" }} />
       </div>
 

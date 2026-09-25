@@ -5,6 +5,11 @@
 // would reject anyway. Screens not yet built stay enabled: false and
 // render as inert placeholders, same choice as the tourist app's 5-tab
 // nav in Phase 2.
+//
+// Per the roles matrix (section 7), Rooms/Departments are "read" for
+// plain staff — same as Services/Menu — not hidden entirely. Phase 6
+// originally gated them on canManageRoomsAndDepartments (hiding them from
+// staff outright); caught and fixed in Phase 9's role-test pass.
 import type { ReactNode } from "react";
 import { NavLink, Navigate, Outlet } from "react-router-dom";
 import { permissions } from "@room-aura/shared";
@@ -18,8 +23,8 @@ const NAV_ITEMS = [
   { to: "/orders", label: "Orders", enabled: false, visible: () => true },
   { to: "/services", label: "Services", enabled: true, visible: () => true },
   { to: "/menu", label: "Food & Drinks", enabled: true, visible: () => true },
-  { to: "/rooms", label: "Rooms", enabled: true, visible: (s: StaffProfile) => permissions.canManageRoomsAndDepartments(s) },
-  { to: "/departments", label: "Departments", enabled: true, visible: (s: StaffProfile) => permissions.canManageRoomsAndDepartments(s) },
+  { to: "/rooms", label: "Rooms", enabled: true, visible: () => true },
+  { to: "/departments", label: "Departments", enabled: true, visible: () => true },
   { to: "/staff", label: "Staff", enabled: true, visible: (s: StaffProfile) => permissions.canManageStaff(s) },
   { to: "/feedback", label: "Feedback", enabled: true, visible: (s: StaffProfile) => permissions.canViewFeedback(s) },
   { to: "/analytics", label: "Analytics", enabled: true, visible: (s: StaffProfile) => permissions.canViewAnalytics(s) },

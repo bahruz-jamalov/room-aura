@@ -30,22 +30,8 @@ export default function App() {
             <Route path="/requests" element={<RequestsScreen />} />
             <Route path="/services" element={<ServicesScreen />} />
             <Route path="/menu" element={<MenuScreen />} />
-            <Route
-              path="/departments"
-              element={
-                <RequireCapability check={permissions.canManageRoomsAndDepartments}>
-                  <DepartmentsScreen />
-                </RequireCapability>
-              }
-            />
-            <Route
-              path="/rooms"
-              element={
-                <RequireCapability check={permissions.canManageRoomsAndDepartments}>
-                  <RoomsScreen />
-                </RequireCapability>
-              }
-            />
+            <Route path="/departments" element={<DepartmentsScreen />} />
+            <Route path="/rooms" element={<RoomsScreen />} />
             <Route
               path="/staff"
               element={

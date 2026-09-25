@@ -1,7 +1,9 @@
-// /departments — department CRUD (docs/ARCHITECTURE.md section 6). Admin or
-// manager only (packages/shared/src/permissions.ts canManageRoomsAndDepartments);
-// AdminLayout hides the nav item for plain staff entirely.
+// /departments — department CRUD (docs/ARCHITECTURE.md section 6). Visible
+// to every role; only admin/manager (canManageRoomsAndDepartments) get edit
+// controls — plain staff see a read-only list, matching the "read" cell in
+// the roles matrix (same visibility rule as Services/Menu).
 import { useState } from "react";
+import { permissions } from "@room-aura/shared";
 import { useAuth } from "../auth/AuthContext";
 import SidePanel, { FormField } from "../components/SidePanel";
 import { useDepartmentsAdmin, type AdminDepartment } from "../hooks/useDepartmentsAdmin";
@@ -10,6 +12,7 @@ import { supabase } from "../supabase";
 
 export default function DepartmentsScreen() {
   const { staff } = useAuth();
+  const canEdit = staff ? permissions.canManageRoomsAndDepartments(staff) : false;
   const { departments, loading, reload } = useDepartmentsAdmin();
   const [editing, setEditing] = useState<AdminDepartment | "new" | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -29,9 +32,11 @@ export default function DepartmentsScreen() {
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "var(--ra-space-4)" }}>
         <h1 style={{ fontSize: "var(--ra-text-2xl)", margin: 0 }}>Departments</h1>
-        <button style={primaryButton} onClick={() => setEditing("new")}>
-          + Add Department
-        </button>
+        {canEdit && (
+          <button style={primaryButton} onClick={() => setEditing("new")}>
+            + Add Department
+          </button>
+        )}
       </div>
 
       {error && (
@@ -71,12 +76,16 @@ export default function DepartmentsScreen() {
                   <td style={{ padding: "var(--ra-space-3)", fontWeight: 600 }}>{d.name}</td>
                   <td style={{ padding: "var(--ra-space-3)" }}>{d.is_active ? "Active" : "Inactive"}</td>
                   <td style={{ padding: "var(--ra-space-3)", textAlign: "right", whiteSpace: "nowrap" }}>
-                    <button style={{ ...secondaryButton, marginRight: "var(--ra-space-2)" }} onClick={() => setEditing(d)}>
-                      Edit
-                    </button>
-                    <button style={dangerButton} onClick={() => void handleDelete(d)}>
-                      Delete
-                    </button>
+                    {canEdit && (
+                      <>
+                        <button style={{ ...secondaryButton, marginRight: "var(--ra-space-2)" }} onClick={() => setEditing(d)}>
+                          Edit
+                        </button>
+                        <button style={dangerButton} onClick={() => void handleDelete(d)}>
+                          Delete
+                        </button>
+                      </>
+                    )}
                   </td>
                 </tr>
               ))

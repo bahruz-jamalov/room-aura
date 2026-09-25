@@ -16,7 +16,11 @@
     "loading": "Yükleniyor…",
     "optional": "İsteğe bağlı",
     "note": "Not",
-    "minutes": "dakika"
+    "minutes": "dakika",
+    "free": "Ücretsiz",
+    "or": "veya",
+    "genericError": "Bir şeyler ters gitti. Lütfen tekrar deneyin.",
+    "untitled": "Başlıksız"
   },
   "onboarding": {
     "chooseLanguage": "Dilinizi seçin",
@@ -24,7 +28,8 @@
     "scanQr": "Otel/Oda QR Kodunu Tarayın",
     "enterCode": "Giriş Kodunu Girin",
     "connecting": "Bağlanıyor…",
-    "invalidCode": "Bu kod geçerli değil. Lütfen resepsiyonla iletişime geçin."
+    "invalidCode": "Bu kod geçerli değil. Lütfen resepsiyonla iletişime geçin.",
+    "scanInstructions": "Telefonunuzun kamerasını odanızdaki veya resepsiyondaki QR koda tutun."
   },
   "home": {
     "welcomeTo": "Hoş geldiniz",
@@ -39,7 +44,9 @@
     "addNote": "Not ekle (isteğe bağlı)",
     "otherRequest": "Diğer Talep",
     "whatDoYouNeed": "Neye ihtiyacınız var?",
-    "typeInYourLanguage": "Talebinizi kendi dilinizde yazın"
+    "typeInYourLanguage": "Talebinizi kendi dilinizde yazın",
+    "notFound": "Talep bulunamadı.",
+    "noDepartmentConfigured": "Bu otel bunun nereye gönderileceğini henüz yapılandırmadı. Lütfen resepsiyonla iletişime geçin."
   },
   "status": {
     "service": {
@@ -60,7 +67,14 @@
     }
   },
   "menu": {
-    "title": "Yiyecek ve İçecek"
+    "title": "Yiyecek ve İçecek",
+    "soldOut": "Tükendi"
+  },
+  "hotel": {
+    "address": "Adres",
+    "phone": "Telefon",
+    "checkin": "Giriş",
+    "checkout": "Çıkış"
   },
   "cart": {
     "title": "Sepet",

@@ -37,7 +37,7 @@ export default function RequestDetailScreen() {
   if (notFound || !request) {
     return (
       <div style={{ padding: "var(--ra-space-page-gutter)" }}>
-        <p style={{ color: "var(--ra-color-danger)" }}>Request not found.</p>
+        <p style={{ color: "var(--ra-color-danger)" }}>{t("request.notFound")}</p>
       </div>
     );
   }

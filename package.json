@@ -22,6 +22,7 @@
     "seed": "tsx scripts/seed.ts",
     "test:isolation": "tsx scripts/test-isolation.ts",
     "test:anon-access": "tsx scripts/test-anon-access.ts",
+    "test:roles": "tsx scripts/test-roles.ts",
     "typecheck:scripts": "tsc --noEmit -p scripts"
   },
   "devDependencies": {

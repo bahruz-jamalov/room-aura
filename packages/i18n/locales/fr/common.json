@@ -16,7 +16,11 @@
     "loading": "Chargement…",
     "optional": "Facultatif",
     "note": "Remarque",
-    "minutes": "minutes"
+    "minutes": "minutes",
+    "free": "Gratuit",
+    "or": "ou",
+    "genericError": "Une erreur s'est produite. Veuillez réessayer.",
+    "untitled": "Sans titre"
   },
   "onboarding": {
     "chooseLanguage": "Choisissez votre langue",
@@ -24,7 +28,8 @@
     "scanQr": "Scannez le QR code de l'hôtel/chambre",
     "enterCode": "Entrez le code d'accès",
     "connecting": "Connexion…",
-    "invalidCode": "Ce code n'est pas valide. Veuillez contacter la réception."
+    "invalidCode": "Ce code n'est pas valide. Veuillez contacter la réception.",
+    "scanInstructions": "Pointez la caméra de votre téléphone vers le code QR de votre chambre ou de la réception."
   },
   "home": {
     "welcomeTo": "Bienvenue à",
@@ -39,7 +44,9 @@
     "addNote": "Ajouter une remarque (facultatif)",
     "otherRequest": "Autre demande",
     "whatDoYouNeed": "De quoi avez-vous besoin ?",
-    "typeInYourLanguage": "Écrivez votre demande dans votre propre langue"
+    "typeInYourLanguage": "Écrivez votre demande dans votre propre langue",
+    "notFound": "Demande introuvable.",
+    "noDepartmentConfigured": "Cet hôtel n'a pas encore configuré où envoyer ceci. Veuillez contacter la réception."
   },
   "status": {
     "service": {
@@ -60,7 +67,14 @@
     }
   },
   "menu": {
-    "title": "Restauration"
+    "title": "Restauration",
+    "soldOut": "Épuisé"
+  },
+  "hotel": {
+    "address": "Adresse",
+    "phone": "Téléphone",
+    "checkin": "Arrivée",
+    "checkout": "Départ"
   },
   "cart": {
     "title": "Panier",

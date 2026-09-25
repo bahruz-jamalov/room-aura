@@ -56,7 +56,7 @@ export default function ServiceCategoryScreen() {
                 <div style={{ display: "flex", justifyContent: "space-between", gap: "var(--ra-space-2)" }}>
                   <strong>{svc.name}</strong>
                   <span style={{ color: "var(--ra-color-accent)", fontWeight: 600, whiteSpace: "nowrap" }}>
-                    {svc.isFree ? "Free" : formatMoney(svc.priceMinor, svc.currency, i18n.language)}
+                    {svc.isFree ? t("common.free") : formatMoney(svc.priceMinor, svc.currency, i18n.language)}
                   </span>
                 </div>
                 {svc.description && (

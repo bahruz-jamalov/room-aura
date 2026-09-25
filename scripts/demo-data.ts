@@ -70,6 +70,12 @@ export interface DemoStaff {
 
 export const HOTEL_A_STAFF: DemoStaff[] = [
   { email: "admin@auragrand.demo", fullName: "Amira Hassan", role: "hotel_admin", departmentCode: null },
+  // A manager needs no department (same CHECK constraint as hotel_admin —
+  // see 00000000000004_hotels_core.sql's staff_department_required_for_staff_role)
+  // but is scoped like one for the roles-matrix tests: all departments'
+  // requests, catalogue/rooms/departments management, no staff/access-token
+  // management, no hotel settings.
+  { email: "manager@auragrand.demo", fullName: "Marcus Chen", role: "manager", departmentCode: null },
   { email: "sarah@auragrand.demo", fullName: "Sarah Nguyen", role: "staff", departmentCode: "housekeeping" },
 ];
 

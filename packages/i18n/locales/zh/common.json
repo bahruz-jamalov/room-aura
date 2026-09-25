@@ -16,7 +16,11 @@
     "loading": "加载中…",
     "optional": "可选",
     "note": "备注",
-    "minutes": "分钟"
+    "minutes": "分钟",
+    "free": "免费",
+    "or": "或",
+    "genericError": "出了点问题，请重试。",
+    "untitled": "未命名"
   },
   "onboarding": {
     "chooseLanguage": "选择您的语言",
@@ -24,7 +28,8 @@
     "scanQr": "扫描酒店/房间二维码",
     "enterCode": "输入访问码",
     "connecting": "连接中…",
-    "invalidCode": "该验证码无效，请联系前台。"
+    "invalidCode": "该验证码无效，请联系前台。",
+    "scanInstructions": "将手机摄像头对准房间或前台的二维码。"
   },
   "home": {
     "welcomeTo": "欢迎入住",
@@ -39,7 +44,9 @@
     "addNote": "添加备注（可选）",
     "otherRequest": "其他请求",
     "whatDoYouNeed": "您需要什么？",
-    "typeInYourLanguage": "请用您自己的语言输入您的需求"
+    "typeInYourLanguage": "请用您自己的语言输入您的需求",
+    "notFound": "未找到请求。",
+    "noDepartmentConfigured": "该酒店尚未配置此项的接收部门，请联系前台。"
   },
   "status": {
     "service": {
@@ -60,7 +67,14 @@
     }
   },
   "menu": {
-    "title": "餐饮"
+    "title": "餐饮",
+    "soldOut": "已售罄"
+  },
+  "hotel": {
+    "address": "地址",
+    "phone": "电话",
+    "checkin": "入住时间",
+    "checkout": "退房时间"
   },
   "cart": {
     "title": "购物车",

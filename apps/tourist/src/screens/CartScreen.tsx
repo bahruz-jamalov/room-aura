@@ -35,7 +35,7 @@ export default function CartScreen() {
       .single<{ request_id: string; request_number: string; total_minor: number; currency: string }>();
 
     if (rpcError || !data) {
-      setError(rpcError?.message ?? "Something went wrong. Please try again.");
+      setError(rpcError?.message ?? t("common.genericError"));
       setSubmitting(false);
       return;
     }

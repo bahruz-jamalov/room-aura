@@ -16,7 +16,11 @@
     "loading": "Wird geladen…",
     "optional": "Optional",
     "note": "Hinweis",
-    "minutes": "Minuten"
+    "minutes": "Minuten",
+    "free": "Kostenlos",
+    "or": "oder",
+    "genericError": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
+    "untitled": "Unbenannt"
   },
   "onboarding": {
     "chooseLanguage": "Wählen Sie Ihre Sprache",
@@ -24,7 +28,8 @@
     "scanQr": "Hotel-/Zimmer-QR-Code scannen",
     "enterCode": "Zugangscode eingeben",
     "connecting": "Verbindung wird hergestellt…",
-    "invalidCode": "Dieser Code ist ungültig. Bitte wenden Sie sich an die Rezeption."
+    "invalidCode": "Dieser Code ist ungültig. Bitte wenden Sie sich an die Rezeption.",
+    "scanInstructions": "Richten Sie die Kamera Ihres Telefons auf den QR-Code in Ihrem Zimmer oder an der Rezeption."
   },
   "home": {
     "welcomeTo": "Willkommen im",
@@ -39,7 +44,9 @@
     "addNote": "Hinweis hinzufügen (optional)",
     "otherRequest": "Andere Anfrage",
     "whatDoYouNeed": "Was benötigen Sie?",
-    "typeInYourLanguage": "Schreiben Sie Ihre Anfrage in Ihrer eigenen Sprache"
+    "typeInYourLanguage": "Schreiben Sie Ihre Anfrage in Ihrer eigenen Sprache",
+    "notFound": "Anfrage nicht gefunden.",
+    "noDepartmentConfigured": "Dieses Hotel hat noch nicht festgelegt, wohin dies gesendet werden soll. Bitte wenden Sie sich an die Rezeption."
   },
   "status": {
     "service": {
@@ -60,7 +67,14 @@
     }
   },
   "menu": {
-    "title": "Essen & Trinken"
+    "title": "Essen & Trinken",
+    "soldOut": "Ausverkauft"
+  },
+  "hotel": {
+    "address": "Adresse",
+    "phone": "Telefon",
+    "checkin": "Check-in",
+    "checkout": "Check-out"
   },
   "cart": {
     "title": "Warenkorb",

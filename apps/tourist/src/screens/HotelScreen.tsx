@@ -67,10 +67,10 @@ export default function HotelScreen() {
           <div
             style={{ ...card, padding: "var(--ra-space-4)", display: "flex", flexDirection: "column", gap: "var(--ra-space-2)" }}
           >
-            {settings?.address && <Row label="Address" value={settings.address} />}
-            {settings?.contactPhone && <Row label="Phone" value={settings.contactPhone} />}
-            {settings?.checkinTime && <Row label="Check-in" value={settings.checkinTime} />}
-            {settings?.checkoutTime && <Row label="Check-out" value={settings.checkoutTime} />}
+            {settings?.address && <Row label={t("hotel.address")} value={settings.address} />}
+            {settings?.contactPhone && <Row label={t("hotel.phone")} value={settings.contactPhone} />}
+            {settings?.checkinTime && <Row label={t("hotel.checkin")} value={settings.checkinTime} />}
+            {settings?.checkoutTime && <Row label={t("hotel.checkout")} value={settings.checkoutTime} />}
           </div>
         </>
       )}

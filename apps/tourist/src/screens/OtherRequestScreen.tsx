@@ -31,7 +31,7 @@ export default function OtherRequestScreen() {
       const translated = await translateContent(trimmed, i18n.language, targetLocale);
       const departmentId = await resolveFreetextDepartment(translated.text);
       if (!departmentId) {
-        setError("This hotel hasn't configured where to send this yet. Please contact reception.");
+        setError(t("request.noDepartmentConfigured"));
         setSubmitting(false);
         return;
       }
@@ -54,14 +54,14 @@ export default function OtherRequestScreen() {
         .single();
 
       if (insertError || !data) {
-        setError(insertError?.message ?? "Something went wrong. Please try again.");
+        setError(insertError?.message ?? t("common.genericError"));
         setSubmitting(false);
         return;
       }
 
       navigate(`/requests/${data.id}`, { replace: true });
     } catch {
-      setError("Something went wrong. Please try again.");
+      setError(t("common.genericError"));
       setSubmitting(false);
     }
   }
