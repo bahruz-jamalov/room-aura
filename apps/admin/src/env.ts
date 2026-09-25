@@ -3,6 +3,7 @@
 // surfacing a confusing runtime error later.
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined;
 const supabasePublishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined;
+const touristAppUrl = (import.meta.env.VITE_TOURIST_APP_URL as string | undefined) ?? "http://localhost:5173";
 
 if (!supabaseUrl || !supabasePublishableKey) {
   throw new Error(
@@ -10,4 +11,4 @@ if (!supabaseUrl || !supabasePublishableKey) {
   );
 }
 
-export const env = { supabaseUrl, supabasePublishableKey };
+export const env = { supabaseUrl, supabasePublishableKey, touristAppUrl };

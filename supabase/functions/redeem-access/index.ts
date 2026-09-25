@@ -128,11 +128,15 @@ Deno.serve(async (req) => {
 
     if (sessionError || !session) return json({ error: "server_error" }, 500);
 
-    void admin.from("access_tokens").update({ last_used_at: new Date().toISOString() }).eq("id", accessToken.id);
-
+    // Awaited, not fire-and-forget: an unawaited promise here isn't
+    // guaranteed to finish before Deno tears down the isolate once the
+    // response below is sent, which is why /access showed every token as
+    // "Last used: Never" despite real redemptions — this update was simply
+    // never completing.
     const [{ data: hotel }, { data: room }] = await Promise.all([
       admin.from("hotels").select("name, logo_url, default_locale, currency").eq("id", session.hotel_id).single(),
       admin.from("rooms").select("number").eq("id", session.room_id).single(),
+      admin.from("access_tokens").update({ last_used_at: new Date().toISOString() }).eq("id", accessToken.id),
     ]);
 
     return json(

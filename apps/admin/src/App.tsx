@@ -3,6 +3,7 @@ import { permissions } from "@room-aura/shared";
 import { AuthProvider } from "./auth/AuthContext";
 import AdminLayout, { RootRedirect } from "./components/AdminLayout";
 import RequireCapability from "./components/RequireCapability";
+import AccessScreen from "./screens/AccessScreen";
 import DashboardScreen from "./screens/DashboardScreen";
 import DepartmentsScreen from "./screens/DepartmentsScreen";
 import MenuScreen from "./screens/MenuScreen";
@@ -43,6 +44,14 @@ export default function App() {
               element={
                 <RequireCapability check={permissions.canManageStaff}>
                   <StaffScreen />
+                </RequireCapability>
+              }
+            />
+            <Route
+              path="/access"
+              element={
+                <RequireCapability check={permissions.canManageAccessTokens}>
+                  <AccessScreen />
                 </RequireCapability>
               }
             />
