@@ -9,6 +9,8 @@ export interface DashboardStats {
   ordersToday: number;
   revenueTodayMinor: number;
   revenueCurrency: string | null;
+  avgRatingToday: number | null;
+  avgEffortToday: number | null;
 }
 
 function startOfToday(): string {
@@ -60,6 +62,14 @@ export function useDashboardStats() {
         }
       }
 
+      const { data: feedbackToday } = await supabase.from("feedback").select("rating, effort_score").gte("created_at", since);
+      const avgRatingToday = feedbackToday?.length
+        ? feedbackToday.reduce((sum, f) => sum + f.rating, 0) / feedbackToday.length
+        : null;
+      const avgEffortToday = feedbackToday?.length
+        ? feedbackToday.reduce((sum, f) => sum + f.effort_score, 0) / feedbackToday.length
+        : null;
+
       if (cancelled) return;
       setStats({
         newCount,
@@ -69,6 +79,8 @@ export function useDashboardStats() {
         ordersToday: orderIdsToday.length,
         revenueTodayMinor,
         revenueCurrency,
+        avgRatingToday,
+        avgEffortToday,
       });
     }
     void load();
@@ -77,6 +89,7 @@ export function useDashboardStats() {
       .channel("dashboard-stats")
       .on("postgres_changes", { event: "*", schema: "public", table: "requests" }, () => void load())
       .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, () => void load())
+      .on("postgres_changes", { event: "*", schema: "public", table: "feedback" }, () => void load())
       .subscribe();
 
     return () => {

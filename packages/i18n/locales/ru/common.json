@@ -78,7 +78,10 @@
   "feedback": {
     "howWasExperience": "Как прошёл ваш опыт?",
     "howEasy": "Насколько легко было оставить этот запрос?",
-    "optionalComment": "Комментарий (необязательно)"
+    "optionalComment": "Комментарий (необязательно)",
+    "rateExperience": "Оцените свой опыт",
+    "submit": "Отправить",
+    "thankYou": "Спасибо за ваш отзыв!"
   },
   "settings": {
     "language": "Язык",

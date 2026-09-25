@@ -321,4 +321,46 @@ through the UI, not just building forms:
 - Regression suites re-run after every schema-adjacent change and still
   pass: `pnpm test:anon-access` (19/19), `pnpm test:isolation` (40/40).
 
-Phases 7–9 (feedback/analytics, super admin, hardening) have not started.
+**Phase 7 (feedback + analytics) is complete** — verified against the live
+project with a real rating submitted through the guest UI, not seeded data:
+
+- Guest side: a completed request's detail screen shows a "Rate your
+  experience" button (only while no feedback exists yet) leading to
+  `/requests/:id/feedback` — 1–5 stars for satisfaction, 1–5 for effort,
+  optional comment, all through the `feedback` table's existing RLS
+  ("guest creates feedback for own completed request"). The `feedback`
+  i18n namespace was already scaffolded from Phase 1; only three keys
+  (`rateExperience`, `submit`, `thankYou`) needed adding, across all 9
+  locales.
+- Admin side: `/feedback` (ratings/effort/comments, filterable by
+  department and minimum rating, with an average-rating/average-effort
+  summary) and `/analytics` (operational · guest experience · commercial,
+  with Today/7-day/30-day/custom-range presets) — both admin/manager only.
+  Dashboard gained real Guest Rating / Effort Score KPIs, replacing the
+  Phase 4/5 placeholders that were deliberately left out until real
+  feedback data existed.
+- Verified live: submitted a real 5-star / 4-effort rating with a comment
+  on a completed Housekeeping request through the guest app, and confirmed
+  it immediately appeared correctly in the admin Feedback screen, the
+  Analytics screen's Guest Experience section, and the Dashboard's Guest
+  Rating/Effort Score KPIs (5.0 / 4.0). Confirmed the roles matrix holds:
+  Sarah (plain Housekeeping staff) is redirected away from `/analytics`
+  and her Dashboard correctly shows "—" for those KPIs, since `feedback`'s
+  RLS denies plain staff read access entirely — not just a hidden nav item.
+- Three real bugs found and fixed while building this phase: (1) `feedback`
+  was never added to the `supabase_realtime` publication (migration
+  `00000000000019`) — same lesson as Phase 3/4, now caught proactively
+  before shipping rather than after; (2) `/analytics`'s date-range
+  computation created a fresh `Date` object every render, which combined
+  with a `useEffect` keyed on those objects sent the screen into an
+  infinite refetch loop (250+ failed requests) — fixed by memoizing the
+  range on the inputs that should actually change it; (3) the analytics
+  revenue query filtered `orders.created_at`, a column that doesn't
+  exist — `orders` has no timestamp of its own (`id` *is* `request_id`,
+  1:1) — so it silently returned zero orders/revenue every time; fixed by
+  joining through `requests.created_at` for order-kind rows, the same
+  pattern `useDashboardStats` already used correctly.
+- Regression suites re-run and still pass: `pnpm test:anon-access`
+  (19/19), `pnpm test:isolation` (40/40).
+
+Phases 8–9 (super admin, hardening) have not started.

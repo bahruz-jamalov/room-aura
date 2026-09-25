@@ -4,7 +4,9 @@ import { AuthProvider } from "./auth/AuthContext";
 import AdminLayout, { RootRedirect } from "./components/AdminLayout";
 import RequireCapability from "./components/RequireCapability";
 import AccessScreen from "./screens/AccessScreen";
+import AnalyticsScreen from "./screens/AnalyticsScreen";
 import DashboardScreen from "./screens/DashboardScreen";
+import FeedbackScreen from "./screens/FeedbackScreen";
 import DepartmentsScreen from "./screens/DepartmentsScreen";
 import MenuScreen from "./screens/MenuScreen";
 import RequestsScreen from "./screens/RequestsScreen";
@@ -52,6 +54,22 @@ export default function App() {
               element={
                 <RequireCapability check={permissions.canManageAccessTokens}>
                   <AccessScreen />
+                </RequireCapability>
+              }
+            />
+            <Route
+              path="/feedback"
+              element={
+                <RequireCapability check={permissions.canViewFeedback}>
+                  <FeedbackScreen />
+                </RequireCapability>
+              }
+            />
+            <Route
+              path="/analytics"
+              element={
+                <RequireCapability check={permissions.canViewAnalytics}>
+                  <AnalyticsScreen />
                 </RequireCapability>
               }
             />

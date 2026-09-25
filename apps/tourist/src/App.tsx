@@ -6,6 +6,7 @@ import { GuestSessionProvider, useGuestSession } from "./guest/GuestSessionConte
 import CartScreen from "./screens/CartScreen";
 import ConnectCodeScreen from "./screens/ConnectCodeScreen";
 import ConnectScreen from "./screens/ConnectScreen";
+import FeedbackScreen from "./screens/FeedbackScreen";
 import HomeScreen from "./screens/HomeScreen";
 import HotelScreen from "./screens/HotelScreen";
 import MenuCategoryScreen from "./screens/MenuCategoryScreen";
@@ -49,6 +50,7 @@ export default function App() {
               <Route path="/cart" element={<CartScreen />} />
               <Route path="/requests" element={<MyRequestsScreen />} />
               <Route path="/requests/:requestId" element={<RequestDetailScreen />} />
+              <Route path="/requests/:requestId/feedback" element={<FeedbackScreen />} />
               <Route path="/hotel" element={<HotelScreen />} />
               <Route path="/settings" element={<SettingsScreen />} />
             </Route>

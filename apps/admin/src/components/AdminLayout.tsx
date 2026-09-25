@@ -21,8 +21,8 @@ const NAV_ITEMS = [
   { to: "/rooms", label: "Rooms", enabled: true, visible: (s: StaffProfile) => permissions.canManageRoomsAndDepartments(s) },
   { to: "/departments", label: "Departments", enabled: true, visible: (s: StaffProfile) => permissions.canManageRoomsAndDepartments(s) },
   { to: "/staff", label: "Staff", enabled: true, visible: (s: StaffProfile) => permissions.canManageStaff(s) },
-  { to: "/feedback", label: "Feedback", enabled: false, visible: () => true },
-  { to: "/analytics", label: "Analytics", enabled: false, visible: () => true },
+  { to: "/feedback", label: "Feedback", enabled: true, visible: (s: StaffProfile) => permissions.canViewFeedback(s) },
+  { to: "/analytics", label: "Analytics", enabled: true, visible: (s: StaffProfile) => permissions.canViewAnalytics(s) },
   { to: "/access", label: "QR / Access", enabled: true, visible: (s: StaffProfile) => permissions.canManageAccessTokens(s) },
   { to: "/settings", label: "Settings", enabled: false, visible: () => true },
 ] as const;

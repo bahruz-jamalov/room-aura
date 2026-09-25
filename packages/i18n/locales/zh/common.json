@@ -78,7 +78,10 @@
   "feedback": {
     "howWasExperience": "您的体验如何？",
     "howEasy": "提交此请求的操作是否简便？",
-    "optionalComment": "评论（可选）"
+    "optionalComment": "评论（可选）",
+    "rateExperience": "评价您的体验",
+    "submit": "提交",
+    "thankYou": "感谢您的反馈！"
   },
   "settings": {
     "language": "语言",

@@ -1,7 +1,6 @@
-// KPI cards cover what's real: operational counts from `requests`, and now
-// (Phase 5) Orders Today / Revenue Today from real orders. Guest Rating and
-// Customer Effort Score still don't exist until Phase 7 (feedback) — shown
-// as fake zeros would be worse than not shown at all, so they stay out.
+// KPI cards cover what's real: operational counts from `requests`, Orders
+// Today / Revenue Today from real orders (Phase 5), and now Guest Rating /
+// Effort Score from real feedback (Phase 7).
 import { useNavigate } from "react-router-dom";
 import { formatMoney } from "@room-aura/shared";
 import { useAuth } from "../auth/AuthContext";
@@ -41,6 +40,8 @@ export default function DashboardScreen() {
                 : "…"
           }
         />
+        <Kpi label="Guest Rating" value={stats?.avgRatingToday != null ? stats.avgRatingToday.toFixed(1) : stats ? "—" : "…"} />
+        <Kpi label="Effort Score" value={stats?.avgEffortToday != null ? stats.avgEffortToday.toFixed(1) : stats ? "—" : "…"} />
       </div>
 
       <h2 style={{ fontSize: "var(--ra-text-lg)" }}>Recent requests</h2>

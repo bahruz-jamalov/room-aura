@@ -78,7 +78,10 @@
   "feedback": {
     "howWasExperience": "كيف كانت تجربتك؟",
     "howEasy": "ما مدى سهولة تقديم هذا الطلب؟",
-    "optionalComment": "تعليق (اختياري)"
+    "optionalComment": "تعليق (اختياري)",
+    "rateExperience": "قيّم تجربتك",
+    "submit": "إرسال",
+    "thankYou": "شكراً على ملاحظاتك!"
   },
   "settings": {
     "language": "اللغة",

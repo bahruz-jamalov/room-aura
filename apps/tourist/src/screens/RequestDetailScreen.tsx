@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { canGuestCancel, trackerStepState, TRACKER_STEPS } from "@room-aura/shared";
+import { useFeedback } from "../hooks/useFeedback";
 import { useRequestDetail } from "../hooks/useRequestDetail";
 import { primaryButton, secondaryButton } from "../lib/styles";
 import { statusI18nKey } from "../lib/statusI18n";
@@ -16,6 +17,7 @@ export default function RequestDetailScreen() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { request, loading, notFound } = useRequestDetail(requestId);
+  const { feedback } = useFeedback(requestId);
   const [cancelling, setCancelling] = useState(false);
 
   async function handleCancel() {
@@ -113,7 +115,13 @@ export default function RequestDetailScreen() {
         </button>
       )}
 
-      <button style={primaryButton} onClick={() => navigate("/home")}>
+      {request.status === "completed" && !feedback && (
+        <button style={primaryButton} onClick={() => navigate(`/requests/${request.id}/feedback`)}>
+          {t("feedback.rateExperience")}
+        </button>
+      )}
+
+      <button style={request.status === "completed" && !feedback ? secondaryButton : primaryButton} onClick={() => navigate("/home")}>
         {t("nav.home")}
       </button>
     </div>

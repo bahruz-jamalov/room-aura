@@ -78,7 +78,10 @@
   "feedback": {
     "howWasExperience": "¿Cómo fue tu experiencia?",
     "howEasy": "¿Qué tan fácil fue hacer esta solicitud?",
-    "optionalComment": "Comentario opcional"
+    "optionalComment": "Comentario opcional",
+    "rateExperience": "Califica tu experiencia",
+    "submit": "Enviar",
+    "thankYou": "¡Gracias por tu comentario!"
   },
   "settings": {
     "language": "Idioma",

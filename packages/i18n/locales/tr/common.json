@@ -78,7 +78,10 @@
   "feedback": {
     "howWasExperience": "Deneyiminiz nasıldı?",
     "howEasy": "Bu talebi yapmak ne kadar kolaydı?",
-    "optionalComment": "İsteğe bağlı yorum"
+    "optionalComment": "İsteğe bağlı yorum",
+    "rateExperience": "Deneyiminizi değerlendirin",
+    "submit": "Gönder",
+    "thankYou": "Geri bildiriminiz için teşekkürler!"
   },
   "settings": {
     "language": "Dil",

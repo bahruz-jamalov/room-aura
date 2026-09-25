@@ -78,7 +78,10 @@
   "feedback": {
     "howWasExperience": "Təcrübəniz necə idi?",
     "howEasy": "Bu sorğunu etmək nə qədər asan idi?",
-    "optionalComment": "İstəyə bağlı şərh"
+    "optionalComment": "İstəyə bağlı şərh",
+    "rateExperience": "Təcrübənizi qiymətləndirin",
+    "submit": "Göndər",
+    "thankYou": "Rəyiniz üçün təşəkkürlər!"
   },
   "settings": {
     "language": "Dil",
