@@ -60,6 +60,19 @@ Push the schema:
 pnpm db:push
 ```
 
+In the dashboard, **Authentication → Sign In / Providers**, turn on **Allow
+anonymous sign-ins** — guest sessions (docs/ARCHITECTURE.md §4) depend on it.
+
+Deploy the edge functions. This needs a **personal access token** (from
+[supabase.com/dashboard/account/tokens](https://supabase.com/dashboard/account/tokens),
+distinct from the service role key) — export it in your own shell, never
+paste it into chat with an AI assistant, never commit it:
+
+```bash
+export SUPABASE_ACCESS_TOKEN=sbp_...
+pnpm exec supabase functions deploy redeem-access
+```
+
 Copy env files and fill in your project's URL + publishable (anon) key —
 both are safe to embed in a frontend bundle, since Row Level Security, not
 key secrecy, is what protects the data:
@@ -79,7 +92,9 @@ export SUPABASE_SERVICE_ROLE_KEY=eyJ...
 pnpm seed
 ```
 
-See [docs/DEMO_CREDENTIALS.md](docs/DEMO_CREDENTIALS.md) for the accounts this creates.
+See [docs/DEMO_CREDENTIALS.md](docs/DEMO_CREDENTIALS.md) for the accounts this
+creates. It also generates a Room 508 QR token and a hotel-wide access code
+for testing onboarding — see scripts/.demo-ids.json (gitignored) after running it.
 
 ## Running
 
@@ -144,5 +159,20 @@ Verified against the live hosted Supabase project, not just asserted:
 - Both apps build and typecheck; design tokens verified visually, including
   a live RTL flip for Arabic.
 
-Phases 2–9 (guest onboarding, requests, admin operations, ordering, hotel
+**Phase 2 (guest onboarding, home, service discovery) is complete** — also
+verified against the live project, not just built:
+
+- `supabase/functions/redeem-access` deployed and confirmed working end to
+  end: navigating to a Room 508 QR's `/j/:token` URL signs the guest in
+  anonymously, redeems the token, creates a `guest_sessions` row, and lands
+  on a localised Home screen — the Phase 2 exit criterion.
+- The "Enter Access Code" fallback (code + room number) exercises the same
+  function's other branch.
+- Full 5-tab navigation shell in place; language switching verified live
+  mid-session (English → Azerbaijani), including nav labels and content.
+- Service category/service discovery screens read hotel-controlled catalogue
+  data through RLS with locale fallback (requested → hotel default → en);
+  empty today only because no catalogue has been seeded yet (Phase 6).
+
+Phases 3–9 (requests + translation, admin operations, ordering, hotel
 configuration, feedback/analytics, super admin, hardening) have not started.
