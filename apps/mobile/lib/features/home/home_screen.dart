@@ -5,6 +5,7 @@ import '../catalogue/catalogue_models.dart';
 import '../catalogue/catalogue_service.dart';
 import '../connect/hotel_session.dart';
 import '../menu/menu_categories_screen.dart';
+import '../requests/other_request_screen.dart';
 import '../services/service_category_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -87,7 +88,18 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
           ),
-          const SliverPadding(padding: EdgeInsets.only(bottom: RaSpace.s8)),
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(RaSpace.pageGutter, RaSpace.s6, RaSpace.pageGutter, RaSpace.s8),
+            sliver: SliverToBoxAdapter(
+              child: OutlinedButton(
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const OtherRequestScreen()),
+                ),
+                style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(RaSize.touchTarget)),
+                child: const Text('Something else? Ask us anything'),
+              ),
+            ),
+          ),
         ],
       ),
     );

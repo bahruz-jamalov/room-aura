@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../shared/request_state_machine.dart';
 import '../../theme/tokens.dart';
-import '../connect/hotel_session.dart';
+import '../connect/hotel_session_holder.dart';
 import 'request_detail_screen.dart';
 import 'request_models.dart';
 import 'requests_service.dart';
@@ -23,7 +23,7 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
   @override
   void initState() {
     super.initState();
-    final hotelSession = context.read<HotelSession>();
+    final hotelSession = context.read<HotelSessionHolder>().session!;
     _load();
     _channel = _requestsService.subscribeToMyRequests(hotelSession.guestSessionId, _load);
   }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../shared/request_state_machine.dart';
 import '../../theme/tokens.dart';
+import 'feedback_screen.dart';
+import 'feedback_service.dart';
 import 'request_models.dart';
 import 'requests_service.dart';
 
@@ -16,7 +18,9 @@ class RequestDetailScreen extends StatefulWidget {
 
 class _RequestDetailScreenState extends State<RequestDetailScreen> {
   late final _requestsService = RequestsService(Supabase.instance.client);
+  late final _feedbackService = FeedbackService(Supabase.instance.client);
   RequestDetail? _detail;
+  bool _hasFeedback = false;
   RealtimeChannel? _channel;
   bool _cancelling = false;
 
@@ -25,8 +29,15 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
     super.initState();
     _load();
     _channel = _requestsService.subscribeToRequestDetail(widget.requestId, (detail) {
-      if (mounted) setState(() => _detail = detail);
+      if (!mounted) return;
+      setState(() => _detail = detail);
+      if (detail.status == RequestStatus.completed) _loadFeedbackStatus();
     });
+  }
+
+  Future<void> _loadFeedbackStatus() async {
+    final existing = await _feedbackService.fetchFeedback(widget.requestId);
+    if (mounted) setState(() => _hasFeedback = existing != null);
   }
 
   @override
@@ -37,7 +48,9 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
 
   Future<void> _load() async {
     final detail = await _requestsService.fetchRequestDetail(widget.requestId);
-    if (mounted) setState(() => _detail = detail);
+    if (!mounted) return;
+    setState(() => _detail = detail);
+    if (detail?.status == RequestStatus.completed) _loadFeedbackStatus();
   }
 
   Future<void> _cancel() async {
@@ -77,6 +90,15 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
                     if (detail.estimatedMinutes != null)
                       Text('Estimated: ~${detail.estimatedMinutes} min', style: const TextStyle(color: RaColors.textSecondary)),
                     const Spacer(),
+                    if (detail.status == RequestStatus.completed && !_hasFeedback) ...[
+                      ElevatedButton(
+                        onPressed: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => FeedbackScreen(requestId: detail.id)),
+                        ),
+                        child: const Text('Rate your experience'),
+                      ),
+                      const SizedBox(height: RaSpace.s3),
+                    ],
                     if (canGuestCancel(detail.status))
                       OutlinedButton(
                         onPressed: _cancelling ? null : _cancel,

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../theme/app_theme.dart';
 import '../features/auth/auth_service.dart';
 import '../features/auth/sign_in_screen.dart';
+import '../features/cart/cart.dart';
+import '../features/connect/hotel_session_holder.dart';
 import '../features/connect/session_gate.dart';
 
 class RoomAuraApp extends StatelessWidget {
@@ -10,11 +13,19 @@ class RoomAuraApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'ROOM-AURA',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.light,
-      home: AuthGate(authService: AuthService(Supabase.instance.client)),
+    // Provided here, above MaterialApp/Navigator, so every pushed route —
+    // not just the first one — can read them (see HotelSessionHolder's doc).
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => Cart()),
+        ChangeNotifierProvider(create: (_) => HotelSessionHolder()),
+      ],
+      child: MaterialApp(
+        title: 'ROOM-AURA',
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.light,
+        home: AuthGate(authService: AuthService(Supabase.instance.client)),
+      ),
     );
   }
 }

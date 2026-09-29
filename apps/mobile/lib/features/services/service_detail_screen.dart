@@ -4,7 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../shared/money.dart';
 import '../../theme/tokens.dart';
 import '../catalogue/catalogue_models.dart';
-import '../connect/hotel_session.dart';
+import '../connect/hotel_session_holder.dart';
 import '../requests/request_detail_screen.dart';
 import '../requests/requests_service.dart';
 
@@ -31,7 +31,7 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
   }
 
   Future<void> _submit() async {
-    final hotelSession = context.read<HotelSession>();
+    final hotelSession = context.read<HotelSessionHolder>().session!;
     setState(() {
       _submitting = true;
       _errorMessage = null;

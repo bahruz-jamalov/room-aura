@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../auth/auth_service.dart';
 import '../home/home_shell.dart';
 import 'connect_screen.dart';
 import 'hotel_session.dart';
+import 'hotel_session_holder.dart';
 import 'hotel_session_service.dart';
 
 /// Shown once signed in. Checks whether this account already redeemed a
@@ -22,7 +24,6 @@ class SessionGate extends StatefulWidget {
 
 class _SessionGateState extends State<SessionGate> {
   late final _hotelSessionService = HotelSessionService(Supabase.instance.client);
-  HotelSession? _session;
   bool _loading = true;
 
   @override
@@ -34,14 +35,12 @@ class _SessionGateState extends State<SessionGate> {
   Future<void> _checkForExistingSession() async {
     final session = await _hotelSessionService.fetchActiveSession();
     if (!mounted) return;
-    setState(() {
-      _session = session;
-      _loading = false;
-    });
+    context.read<HotelSessionHolder>().session = session;
+    setState(() => _loading = false);
   }
 
   void _onConnected(HotelSession session) {
-    setState(() => _session = session);
+    context.read<HotelSessionHolder>().session = session;
     Navigator.of(context).popUntil((route) => route.isFirst);
   }
 
@@ -50,9 +49,10 @@ class _SessionGateState extends State<SessionGate> {
     if (_loading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
-    if (_session == null) {
+    final session = context.watch<HotelSessionHolder>().session;
+    if (session == null) {
       return ConnectScreen(hotelSessionService: _hotelSessionService, onConnected: _onConnected);
     }
-    return HomeShell(authService: widget.authService, hotelSession: _session!);
+    return HomeShell(authService: widget.authService, hotelSession: session);
   }
 }
