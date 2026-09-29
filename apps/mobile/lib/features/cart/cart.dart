@@ -1,0 +1,40 @@
+import 'package:flutter/foundation.dart';
+import 'cart_item.dart';
+
+// Mirrors apps/tourist/src/cart/CartContext.tsx — plain in-memory state,
+// deliberately not persisted (lost on app restart, same as the web app).
+class Cart extends ChangeNotifier {
+  final List<CartItem> _items = [];
+
+  List<CartItem> get items => List.unmodifiable(_items);
+
+  int get itemCount => _items.fold(0, (sum, i) => sum + i.quantity);
+
+  int get totalMinor => _items.fold(0, (sum, i) => sum + i.priceMinor * i.quantity);
+
+  void addItem(CartItem item, {int quantity = 1}) {
+    final index = _items.indexWhere((i) => i.menuItemId == item.menuItemId);
+    if (index == -1) {
+      _items.add(item.copyWith(quantity: quantity));
+    } else {
+      _items[index] = _items[index].copyWith(quantity: _items[index].quantity + quantity);
+    }
+    notifyListeners();
+  }
+
+  void setQuantity(String menuItemId, int quantity) {
+    final index = _items.indexWhere((i) => i.menuItemId == menuItemId);
+    if (index == -1) return;
+    if (quantity <= 0) {
+      _items.removeAt(index);
+    } else {
+      _items[index] = _items[index].copyWith(quantity: quantity);
+    }
+    notifyListeners();
+  }
+
+  void clear() {
+    _items.clear();
+    notifyListeners();
+  }
+}

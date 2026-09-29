@@ -471,6 +471,7 @@ async function main() {
   // human-typeable, since a guest has to read it off a card, not scan it.
   const hotelACode = randomAccessCode();
   await upsertAccessToken(hotelAId, "access_code", null, "Hotel-wide access code (demo)", hotelACode);
+  console.log(`  Hotel A guest access code: ${hotelACode} (room 508)`);
 
   // Free-text ("Other Request") default routing — Guest Relations catches
   // anything the keyword table below doesn't match. See docs/ARCHITECTURE.md
