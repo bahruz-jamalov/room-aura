@@ -25,6 +25,7 @@ class SessionGate extends StatefulWidget {
 class _SessionGateState extends State<SessionGate> {
   late final _hotelSessionService = HotelSessionService(Supabase.instance.client);
   bool _loading = true;
+  bool _hasError = false;
 
   @override
   void initState() {
@@ -33,10 +34,22 @@ class _SessionGateState extends State<SessionGate> {
   }
 
   Future<void> _checkForExistingSession() async {
-    final session = await _hotelSessionService.fetchActiveSession();
-    if (!mounted) return;
-    context.read<HotelSessionHolder>().session = session;
-    setState(() => _loading = false);
+    setState(() {
+      _loading = true;
+      _hasError = false;
+    });
+    try {
+      final session = await _hotelSessionService.fetchActiveSession();
+      if (!mounted) return;
+      context.read<HotelSessionHolder>().session = session;
+      setState(() => _loading = false);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+        _hasError = true;
+      });
+    }
   }
 
   void _onConnected(HotelSession session) {
@@ -48,6 +61,24 @@ class _SessionGateState extends State<SessionGate> {
   Widget build(BuildContext context) {
     if (_loading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+    if (_hasError) {
+      return Scaffold(
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text("Something went wrong loading your session."),
+                const SizedBox(height: 16),
+                FilledButton(onPressed: _checkForExistingSession, child: const Text("Try again")),
+                TextButton(onPressed: () => widget.authService.signOut(), child: const Text("Sign out")),
+              ],
+            ),
+          ),
+        ),
+      );
     }
     final session = context.watch<HotelSessionHolder>().session;
     if (session == null) {

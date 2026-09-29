@@ -27,6 +27,7 @@ export const permissions = {
     isAdminOrManager(staff) || staff.departmentId === requestDepartmentId,
 
   canManageCatalogue: (staff: StaffIdentity) => isAdminOrManager(staff),
+  canManageFaqs: (staff: StaffIdentity) => isAdminOrManager(staff),
   canManageRoomsAndDepartments: (staff: StaffIdentity) => isAdminOrManager(staff),
   canManageRoutingRules: (staff: StaffIdentity) => isAdminOrManager(staff),
 

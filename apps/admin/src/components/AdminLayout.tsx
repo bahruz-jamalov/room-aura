@@ -21,6 +21,7 @@ const NAV_ITEMS = [
   { to: "/dashboard", label: "Dashboard", enabled: true, visible: () => true },
   { to: "/requests", label: "Requests", enabled: true, visible: () => true },
   { to: "/chat", label: "Live Chat", enabled: true, visible: () => true },
+  { to: "/faqs", label: "FAQs", enabled: true, visible: () => true },
   { to: "/orders", label: "Orders", enabled: false, visible: () => true },
   { to: "/services", label: "Services", enabled: true, visible: () => true },
   { to: "/menu", label: "Food & Drinks", enabled: true, visible: () => true },

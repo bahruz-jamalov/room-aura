@@ -12,6 +12,7 @@ import AccessScreen from "./screens/AccessScreen";
 import AnalyticsScreen from "./screens/AnalyticsScreen";
 import ChatScreen from "./screens/ChatScreen";
 import DashboardScreen from "./screens/DashboardScreen";
+import FaqScreen from "./screens/FaqScreen";
 import FeedbackScreen from "./screens/FeedbackScreen";
 import DepartmentsScreen from "./screens/DepartmentsScreen";
 import MenuScreen from "./screens/MenuScreen";
@@ -30,6 +31,7 @@ export default function App() {
             <Route path="/dashboard" element={<DashboardScreen />} />
             <Route path="/requests" element={<RequestsScreen />} />
             <Route path="/chat" element={<ChatScreen />} />
+            <Route path="/faqs" element={<FaqScreen />} />
             <Route path="/services" element={<ServicesScreen />} />
             <Route path="/menu" element={<MenuScreen />} />
             <Route path="/departments" element={<DepartmentsScreen />} />

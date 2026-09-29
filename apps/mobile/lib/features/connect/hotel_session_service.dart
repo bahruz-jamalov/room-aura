@@ -11,10 +11,14 @@ class HotelSessionService {
   /// supabase/migrations/00000000000008_auth_helpers.sql) scopes these
   /// queries to their own session with no manual filter needed.
   Future<HotelSession?> fetchActiveSession() async {
+    // .limit(1) before .maybeSingle(): RLS scopes these to "this guest's
+    // own" rows, which is normally 0 or 1 — but maybeSingle() throws (rather
+    // than picking one) if a policy or edge case ever returns more than
+    // one, which would otherwise strand the caller on a stuck loading state.
     final results = await Future.wait([
-      _client.from('guest_sessions').select('id, room_id').maybeSingle(),
-      _client.from('hotels').select('id, name, logo_url').maybeSingle(),
-      _client.from('rooms').select('number').maybeSingle(),
+      _client.from('guest_sessions').select('id, room_id').limit(1).maybeSingle(),
+      _client.from('hotels').select('id, name, logo_url').limit(1).maybeSingle(),
+      _client.from('rooms').select('number').limit(1).maybeSingle(),
     ]);
     final session = results[0];
     final hotel = results[1];
