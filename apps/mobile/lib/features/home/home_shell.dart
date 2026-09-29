@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../auth/account_screen.dart';
 import '../auth/auth_service.dart';
 import '../connect/hotel_session.dart';
+import '../hotel/hotel_info_screen.dart';
 import '../requests/my_requests_screen.dart';
 import 'home_screen.dart';
 
@@ -29,6 +30,7 @@ class _HomeShellState extends State<HomeShell> {
         children: [
           HomeScreen(hotelSession: widget.hotelSession),
           const MyRequestsScreen(),
+          HotelInfoScreen(hotelSession: widget.hotelSession),
           AccountScreen(authService: widget.authService),
         ],
       ),
@@ -41,6 +43,11 @@ class _HomeShellState extends State<HomeShell> {
             icon: Icon(Icons.receipt_long_outlined),
             selectedIcon: Icon(Icons.receipt_long),
             label: 'Requests',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.apartment_outlined),
+            selectedIcon: Icon(Icons.apartment),
+            label: 'Hotel',
           ),
           NavigationDestination(
             icon: Icon(Icons.person_outline),
