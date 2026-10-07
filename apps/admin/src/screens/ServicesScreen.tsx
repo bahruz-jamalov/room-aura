@@ -390,6 +390,7 @@ function ServiceForm({
   const [allowsQuantity, setAllowsQuantity] = useState(service?.allows_quantity ?? false);
   const [maxQuantity, setMaxQuantity] = useState(service?.max_quantity?.toString() ?? "1");
   const [allowsNote, setAllowsNote] = useState(service?.allows_note ?? true);
+  const [requiresScheduling, setRequiresScheduling] = useState(service?.requires_scheduling ?? false);
   const [isActive, setIsActive] = useState(service?.is_active ?? true);
   const [translations, setTranslations] = useState<Partial<Record<LanguageCode, TranslationValue>>>({});
   const [busy, setBusy] = useState(false);
@@ -430,6 +431,7 @@ function ServiceForm({
       allows_quantity: allowsQuantity,
       max_quantity: allowsQuantity ? parseInt(maxQuantity || "1", 10) : 1,
       allows_note: allowsNote,
+      requires_scheduling: requiresScheduling,
       is_active: isActive,
     };
 

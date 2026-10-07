@@ -13,6 +13,7 @@ export interface AdminService {
   allows_quantity: boolean;
   max_quantity: number;
   allows_note: boolean;
+  requires_scheduling: boolean;
   is_active: boolean;
   sort_order: number;
   displayName: string;
@@ -31,7 +32,7 @@ export function useServicesAdmin(categoryId: string | null, defaultLocale: Langu
       supabase
         .from("services")
         .select(
-          "id, department_id, is_free, price_minor, currency, expected_minutes, allows_quantity, max_quantity, allows_note, is_active, sort_order",
+          "id, department_id, is_free, price_minor, currency, expected_minutes, allows_quantity, max_quantity, allows_note, requires_scheduling, is_active, sort_order",
         )
         .eq("category_id", categoryId)
         .order("sort_order"),
