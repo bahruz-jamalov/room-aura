@@ -18,7 +18,7 @@ class CatalogueService {
         .from('service_categories')
         .select('id, category_type, icon, image_url, sort_order')
         .eq('is_active', true)
-        .order('sort_order');
+        .order('sort_order', ascending: true);
     final ids = rows.map((r) => r['id'] as String).toList();
     if (ids.isEmpty) return [];
 
@@ -54,7 +54,7 @@ class CatalogueService {
         )
         .eq('category_id', categoryId)
         .eq('is_active', true)
-        .order('sort_order');
+        .order('sort_order', ascending: true);
     final ids = rows.map((r) => r['id'] as String).toList();
     if (ids.isEmpty) return [];
 
@@ -92,7 +92,7 @@ class CatalogueService {
         .from('menu_categories')
         .select('id, sort_order')
         .eq('is_active', true)
-        .order('sort_order');
+        .order('sort_order', ascending: true);
     final ids = rows.map((r) => r['id'] as String).toList();
     if (ids.isEmpty) return [];
 
@@ -119,7 +119,7 @@ class CatalogueService {
         .select('id, image_url, price_minor, currency, prep_minutes, status, sort_order')
         .eq('menu_category_id', menuCategoryId)
         .neq('status', 'hidden')
-        .order('sort_order');
+        .order('sort_order', ascending: true);
     final ids = rows.map((r) => r['id'] as String).toList();
     if (ids.isEmpty) return [];
 

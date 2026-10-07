@@ -14,7 +14,7 @@ class ChatService {
     final rows = await _client
         .from('hotel_faqs')
         .select('keyword, question, answer')
-        .order('sort_order');
+        .order('sort_order', ascending: true);
     return rows
         .map((r) => HotelFaq(keyword: r['keyword'] as String, question: r['question'] as String, answer: r['answer'] as String))
         .toList();
@@ -60,7 +60,9 @@ class ChatService {
         .from('chat_messages')
         .select('id, thread_id, sender_type, body, created_at')
         .eq('thread_id', threadId)
-        .order('created_at');
+        // postgrest-dart's .order() defaults to descending (unlike
+        // postgrest-js) — without ascending: true this renders newest-first.
+        .order('created_at', ascending: true);
     return rows.map(_messageFromRow).toList();
   }
 
