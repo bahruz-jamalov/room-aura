@@ -19,6 +19,7 @@ class RequestsService {
     required String departmentId,
     required int quantity,
     String? guestNote,
+    DateTime? requestedFor,
   }) async {
     final row = await _client
         .from('requests')
@@ -31,6 +32,7 @@ class RequestsService {
           'department_id': departmentId,
           'quantity': quantity,
           'guest_note': guestNote,
+          'requested_for': requestedFor?.toIso8601String(),
         })
         .select('id')
         .single();
@@ -124,7 +126,7 @@ class RequestsService {
     final row = await _client
         .from('requests')
         .select(
-          'id, number, kind, status, quantity, guest_note, original_text, estimated_minutes, created_at',
+          'id, number, kind, status, quantity, guest_note, original_text, estimated_minutes, requested_for, created_at',
         )
         .eq('id', requestId)
         .maybeSingle();
@@ -155,6 +157,7 @@ class RequestsService {
       guestNote: row['guest_note'] as String?,
       originalText: row['original_text'] as String?,
       estimatedMinutes: row['estimated_minutes'] as int?,
+      requestedFor: row['requested_for'] == null ? null : DateTime.parse(row['requested_for'] as String),
       createdAt: DateTime.parse(row['created_at'] as String),
     );
   }

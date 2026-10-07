@@ -30,6 +30,7 @@ class ServiceItem {
     required this.allowsQuantity,
     required this.maxQuantity,
     required this.allowsNote,
+    required this.requiresScheduling,
     required this.name,
     required this.description,
   });
@@ -44,6 +45,7 @@ class ServiceItem {
   final bool allowsQuantity;
   final int maxQuantity;
   final bool allowsNote;
+  final bool requiresScheduling;
   final String name;
   final String? description;
 }

@@ -114,6 +114,12 @@ export default function RequestDetailPanel({ request, onClose }: { request: Queu
       <Field label="Room" value={request.roomNumber} />
       <Field label="Department" value={request.departmentName} />
       {request.serviceName && <Field label="Service" value={`${request.serviceName} × ${request.quantity}`} />}
+      {request.requestedFor && (
+        <Field
+          label="Requested for"
+          value={new Date(request.requestedFor).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })}
+        />
+      )}
       {request.guestNote && <Field label="Guest note" value={request.guestNote} />}
       {request.kind === "order" && (
         <>

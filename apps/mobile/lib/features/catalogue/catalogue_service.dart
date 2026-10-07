@@ -50,7 +50,7 @@ class CatalogueService {
     final rows = await _client
         .from('services')
         .select(
-          'id, department_id, image_url, is_free, price_minor, currency, expected_minutes, allows_quantity, max_quantity, allows_note, sort_order',
+          'id, department_id, image_url, is_free, price_minor, currency, expected_minutes, allows_quantity, max_quantity, allows_note, requires_scheduling, sort_order',
         )
         .eq('category_id', categoryId)
         .eq('is_active', true)
@@ -78,6 +78,7 @@ class CatalogueService {
         allowsQuantity: row['allows_quantity'] as bool,
         maxQuantity: row['max_quantity'] as int,
         allowsNote: row['allows_note'] as bool,
+        requiresScheduling: row['requires_scheduling'] as bool,
         name: resolved?['name'] as String? ?? 'Untitled',
         description: resolved?['description'] as String?,
       );

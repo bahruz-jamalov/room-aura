@@ -8,6 +8,12 @@ import '../connect/hotel_session_holder.dart';
 import '../requests/request_detail_screen.dart';
 import '../requests/requests_service.dart';
 
+String _formatScheduledFor(DateTime dt) {
+  final hour = dt.hour.toString().padLeft(2, '0');
+  final minute = dt.minute.toString().padLeft(2, '0');
+  return '${dt.day}/${dt.month}/${dt.year} $hour:$minute';
+}
+
 class ServiceDetailScreen extends StatefulWidget {
   const ServiceDetailScreen({super.key, required this.service});
 
@@ -21,8 +27,26 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
   late final _requestsService = RequestsService(Supabase.instance.client);
   int _quantity = 1;
   final _noteController = TextEditingController();
+  DateTime? _scheduledFor;
   bool _submitting = false;
   String? _errorMessage;
+
+  Future<void> _pickDateTime() async {
+    final now = DateTime.now();
+    final date = await showDatePicker(
+      context: context,
+      initialDate: _scheduledFor ?? now,
+      firstDate: now,
+      lastDate: now.add(const Duration(days: 365)),
+    );
+    if (date == null || !mounted) return;
+    final time = await showTimePicker(
+      context: context,
+      initialTime: _scheduledFor != null ? TimeOfDay.fromDateTime(_scheduledFor!) : TimeOfDay.fromDateTime(now),
+    );
+    if (time == null) return;
+    setState(() => _scheduledFor = DateTime(date.year, date.month, date.day, time.hour, time.minute));
+  }
 
   @override
   void dispose() {
@@ -31,6 +55,10 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
   }
 
   Future<void> _submit() async {
+    if (widget.service.requiresScheduling && _scheduledFor == null) {
+      setState(() => _errorMessage = 'Please choose a date and time.');
+      return;
+    }
     final hotelSession = context.read<HotelSessionHolder>().session!;
     setState(() {
       _submitting = true;
@@ -45,6 +73,7 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
         departmentId: widget.service.departmentId,
         quantity: _quantity,
         guestNote: _noteController.text.trim().isEmpty ? null : _noteController.text.trim(),
+        requestedFor: _scheduledFor,
       );
       if (!mounted) return;
       Navigator.of(context).pushReplacement(
@@ -92,6 +121,15 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                     onPressed: _quantity < service.maxQuantity ? () => setState(() => _quantity++) : null,
                   ),
                 ],
+              ),
+              const SizedBox(height: RaSpace.s4),
+            ],
+            if (service.requiresScheduling) ...[
+              const Text('Date & time', style: TextStyle(fontWeight: FontWeight.w600)),
+              const SizedBox(height: RaSpace.s2),
+              OutlinedButton(
+                onPressed: _pickDateTime,
+                child: Text(_scheduledFor == null ? 'Choose date & time' : _formatScheduledFor(_scheduledFor!)),
               ),
               const SizedBox(height: RaSpace.s4),
             ],

@@ -518,6 +518,12 @@ function ServiceForm({
           Guest can add a note
         </label>
       </FormField>
+      <FormField label="Booking">
+        <label style={{ display: "flex", alignItems: "center", gap: "var(--ra-space-2)" }}>
+          <input type="checkbox" checked={requiresScheduling} onChange={(e) => setRequiresScheduling(e.target.checked)} />
+          Guest must pick a date &amp; time (e.g. spa, restaurant table)
+        </label>
+      </FormField>
       <FormField label="Status">
         <label style={{ display: "flex", alignItems: "center", gap: "var(--ra-space-2)" }}>
           <input type="checkbox" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} />

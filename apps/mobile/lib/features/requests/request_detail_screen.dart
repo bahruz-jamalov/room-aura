@@ -79,6 +79,13 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
                     else
                       _Tracker(kind: detail.kind, status: detail.status),
                     const SizedBox(height: RaSpace.s6),
+                    if (detail.requestedFor != null) ...[
+                      Text(
+                        'Requested for: ${_formatDateTime(detail.requestedFor!)}',
+                        style: const TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      const SizedBox(height: RaSpace.s3),
+                    ],
                     if (detail.originalText != null) ...[
                       Text(detail.originalText!, style: const TextStyle(fontSize: RaText.base)),
                       const SizedBox(height: RaSpace.s3),
@@ -113,6 +120,13 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
       ),
     );
   }
+}
+
+String _formatDateTime(DateTime dt) {
+  final local = dt.toLocal();
+  final hour = local.hour.toString().padLeft(2, '0');
+  final minute = local.minute.toString().padLeft(2, '0');
+  return '${local.day}/${local.month}/${local.year} $hour:$minute';
 }
 
 class _Tracker extends StatelessWidget {

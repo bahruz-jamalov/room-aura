@@ -28,6 +28,7 @@ class RequestDetail {
     required this.guestNote,
     required this.originalText,
     required this.estimatedMinutes,
+    required this.requestedFor,
     required this.createdAt,
   });
 
@@ -39,6 +40,7 @@ class RequestDetail {
   final String? guestNote;
   final String? originalText;
   final int? estimatedMinutes;
+  final DateTime? requestedFor;
   final DateTime createdAt;
 
   RequestDetail copyWith({RequestStatus? status}) => RequestDetail(
@@ -50,6 +52,7 @@ class RequestDetail {
         guestNote: guestNote,
         originalText: originalText,
         estimatedMinutes: estimatedMinutes,
+        requestedFor: requestedFor,
         createdAt: createdAt,
       );
 }

@@ -14,6 +14,7 @@ export interface QueueRequest {
   translatedText: string | null;
   translationIsMock: boolean;
   estimatedMinutes: number | null;
+  requestedFor: string | null;
   createdAt: string;
   roomNumber: string;
   departmentId: string;
@@ -39,6 +40,7 @@ interface RawRow {
   translated_text: string | null;
   translation_is_mock: boolean;
   estimated_minutes: number | null;
+  requested_for: string | null;
   created_at: string;
   room_id: string;
   department_id: string;
@@ -62,7 +64,7 @@ export function useRequestsQueue(hotelDefaultLocale: string) {
       const { data: rows } = await supabase
         .from("requests")
         .select(
-          "id, number, kind, status, quantity, guest_note, original_text, original_locale, translated_text, translation_is_mock, estimated_minutes, created_at, room_id, department_id, service_id, assigned_to",
+          "id, number, kind, status, quantity, guest_note, original_text, original_locale, translated_text, translation_is_mock, estimated_minutes, requested_for, created_at, room_id, department_id, service_id, assigned_to",
         )
         .order("created_at", { ascending: false });
       if (cancelled || !rows) {
@@ -127,6 +129,7 @@ export function useRequestsQueue(hotelDefaultLocale: string) {
           translatedText: r.translated_text,
           translationIsMock: r.translation_is_mock,
           estimatedMinutes: r.estimated_minutes,
+          requestedFor: r.requested_for,
           createdAt: r.created_at,
           roomNumber: roomById.get(r.room_id) ?? "—",
           departmentId: r.department_id,
