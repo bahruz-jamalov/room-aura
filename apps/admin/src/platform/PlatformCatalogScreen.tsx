@@ -28,6 +28,7 @@ interface GlobalCategory {
   parent_category_id: string | null;
   city: string | null;
   is_active: boolean;
+  allows_room_charge: boolean;
   displayName: string;
 }
 
@@ -67,7 +68,7 @@ function useGlobalCategories() {
     const [{ data: rows }, { data: translationRows }] = await Promise.all([
       supabase
         .from("service_categories")
-        .select("id, category_type, icon, parent_category_id, city, is_active, sort_order")
+        .select("id, category_type, icon, parent_category_id, city, is_active, allows_room_charge, sort_order")
         .is("hotel_id", null)
         .order("sort_order"),
       supabase.from("service_category_translations").select("category_id, locale, name").is("hotel_id", null),
@@ -222,6 +223,9 @@ function GlobalCategoryForm({
   const [parentCategoryId, setParentCategoryId] = useState(category?.parent_category_id ?? "");
   const [city, setCity] = useState(category?.city ?? "");
   const [isActive, setIsActive] = useState(category?.is_active ?? true);
+  // Every category here is external to any hotel by definition, so default
+  // a new one to no room-charge rather than the hotel-owned-table default.
+  const [allowsRoomCharge, setAllowsRoomCharge] = useState(category?.allows_room_charge ?? false);
   // A child's city always matches its parent's — don't ask twice.
   const parent = parentOptions.find((p) => p.id === parentCategoryId);
   const effectiveCity = parent ? parent.city : city;
@@ -261,6 +265,7 @@ function GlobalCategoryForm({
       parent_category_id: parentCategoryId || null,
       city: effectiveCity.trim(),
       is_active: isActive,
+      allows_room_charge: categoryType === "menu" ? allowsRoomCharge : true,
     };
     let categoryId = category?.id;
     if (category) {
@@ -318,6 +323,14 @@ function GlobalCategoryForm({
           <option value="menu">Menu / shop (orderable items)</option>
         </select>
       </FormField>
+      {categoryType === "menu" && (
+        <FormField label="Payment">
+          <label style={{ display: "flex", alignItems: "center", gap: "var(--ra-space-2)" }}>
+            <input type="checkbox" checked={allowsRoomCharge} onChange={(e) => setAllowsRoomCharge(e.target.checked)} />
+            Guest can charge to room (leave off for an external shop/restaurant with no hotel folio)
+          </label>
+        </FormField>
+      )}
       <FormField label="Parent category (optional)">
         <select style={selectInput} value={parentCategoryId} onChange={(e) => setParentCategoryId(e.target.value)}>
           <option value="">(top-level — shown directly on the home screen)</option>
