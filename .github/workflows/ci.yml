@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  web:
+    name: Web (typecheck + test)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12.6.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm test
+
+  mobile:
+    name: Mobile (analyze + test)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - run: flutter pub get
+        working-directory: apps/mobile
+
+      # Declared as a flutter: assets: entry (read by flutter_dotenv), so
+      # pub get/analyze/test all need *a* file here even though none of our
+      # tests touch Supabase or read real values from it — see .env.example.
+      - run: cp .env.example .env
+        working-directory: apps/mobile
+
+      - run: flutter analyze
+        working-directory: apps/mobile
+
+      - run: flutter test
+        working-directory: apps/mobile
