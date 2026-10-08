@@ -5,6 +5,8 @@ import '../catalogue/catalogue_models.dart';
 import '../catalogue/catalogue_service.dart';
 import '../connect/hotel_session.dart';
 import '../menu/menu_categories_screen.dart';
+import '../notifications/notifications_screen.dart';
+import '../notifications/notifications_service.dart';
 import '../requests/other_request_screen.dart';
 import '../services/service_category_screen.dart';
 import 'category_group_screen.dart';
@@ -20,7 +22,10 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late final _catalogueService = CatalogueService(Supabase.instance.client);
+  late final _notificationsService = NotificationsService(Supabase.instance.client);
   late Future<List<ServiceCategory>> _categoriesFuture;
+  int _unreadNotifications = 0;
+  RealtimeChannel? _notificationsChannel;
 
   @override
   void initState() {
@@ -29,6 +34,28 @@ class _HomeScreenState extends State<HomeScreen> {
       locale: 'en',
       fallbackLocale: 'en',
     );
+    _loadUnreadNotifications();
+    _notificationsChannel = _notificationsService.subscribeToMyNotifications(
+      widget.hotelSession.guestSessionId,
+      (_) => setState(() => _unreadNotifications++),
+    );
+  }
+
+  @override
+  void dispose() {
+    if (_notificationsChannel != null) Supabase.instance.client.removeChannel(_notificationsChannel!);
+    super.dispose();
+  }
+
+  Future<void> _loadUnreadNotifications() async {
+    final count = await _notificationsService.fetchUnreadCount();
+    if (!mounted) return;
+    setState(() => _unreadNotifications = count);
+  }
+
+  Future<void> _openNotifications() async {
+    await Navigator.of(context).push(MaterialPageRoute(builder: (_) => const NotificationsScreen()));
+    _loadUnreadNotifications();
   }
 
   @override
@@ -42,9 +69,24 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    widget.hotelSession.hotelName,
-                    style: const TextStyle(fontSize: RaText.xxl, fontWeight: FontWeight.w700, color: RaColors.textPrimary),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          widget.hotelSession.hotelName,
+                          style: const TextStyle(fontSize: RaText.xxl, fontWeight: FontWeight.w700, color: RaColors.textPrimary),
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: _openNotifications,
+                        icon: Badge(
+                          isLabelVisible: _unreadNotifications > 0,
+                          label: Text('$_unreadNotifications'),
+                          child: const Icon(Icons.notifications_outlined, color: RaColors.textPrimary),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: RaSpace.s1),
                   Text(
