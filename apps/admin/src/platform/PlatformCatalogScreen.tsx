@@ -26,6 +26,7 @@ interface GlobalCategory {
   category_type: CategoryType;
   icon: string | null;
   parent_category_id: string | null;
+  city: string | null;
   is_active: boolean;
   displayName: string;
 }
@@ -45,6 +46,7 @@ interface GlobalService {
 
 interface GlobalMenuCategory {
   id: string;
+  city: string | null;
   is_active: boolean;
   displayName: string;
 }
@@ -65,7 +67,7 @@ function useGlobalCategories() {
     const [{ data: rows }, { data: translationRows }] = await Promise.all([
       supabase
         .from("service_categories")
-        .select("id, category_type, icon, parent_category_id, is_active, sort_order")
+        .select("id, category_type, icon, parent_category_id, city, is_active, sort_order")
         .is("hotel_id", null)
         .order("sort_order"),
       supabase.from("service_category_translations").select("category_id, locale, name").is("hotel_id", null),
@@ -125,7 +127,7 @@ export default function PlatformCatalogScreen() {
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "var(--ra-text-sm)" }}>
           <thead>
             <tr style={{ textAlign: "left", background: "var(--ra-color-surface-sunken)" }}>
-              {["Icon", "Name", "Type", "Parent", "Status", ""].map((h) => (
+              {["Icon", "Name", "Type", "City", "Parent", "Status", ""].map((h) => (
                 <th key={h} style={{ padding: "var(--ra-space-3)", fontWeight: 600 }}>
                   {h}
                 </th>
@@ -135,13 +137,13 @@ export default function PlatformCatalogScreen() {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={6} style={{ padding: "var(--ra-space-4)", color: "var(--ra-color-text-secondary)" }}>
+                <td colSpan={7} style={{ padding: "var(--ra-space-4)", color: "var(--ra-color-text-secondary)" }}>
                   Loading…
                 </td>
               </tr>
             ) : categories.length === 0 ? (
               <tr>
-                <td colSpan={6} style={{ padding: "var(--ra-space-4)", color: "var(--ra-color-text-secondary)" }}>
+                <td colSpan={7} style={{ padding: "var(--ra-space-4)", color: "var(--ra-color-text-secondary)" }}>
                   No shared categories yet.
                 </td>
               </tr>
@@ -159,6 +161,7 @@ export default function PlatformCatalogScreen() {
                   <td style={{ padding: "var(--ra-space-3)" }}>{c.icon ?? "—"}</td>
                   <td style={{ padding: "var(--ra-space-3)", fontWeight: 600 }}>{c.displayName}</td>
                   <td style={{ padding: "var(--ra-space-3)", color: "var(--ra-color-text-secondary)" }}>{c.category_type}</td>
+                  <td style={{ padding: "var(--ra-space-3)", color: "var(--ra-color-text-secondary)" }}>{c.city ?? "—"}</td>
                   <td style={{ padding: "var(--ra-space-3)", color: "var(--ra-color-text-secondary)" }}>
                     {c.parent_category_id ? categories.find((p) => p.id === c.parent_category_id)?.displayName ?? "—" : "—"}
                   </td>
@@ -179,7 +182,7 @@ export default function PlatformCatalogScreen() {
       </div>
 
       {selectedCategory && selectedCategory.category_type === "menu" && (
-        <GlobalMenuPanel key={selectedCategory.id} shopCategoryId={selectedCategory.id} />
+        <GlobalMenuPanel key={selectedCategory.id} shopCategoryId={selectedCategory.id} city={selectedCategory.city} />
       )}
       {selectedCategory && selectedCategory.category_type === "standard" && (
         <GlobalServicesPanel key={selectedCategory.id} category={selectedCategory} />
@@ -217,7 +220,11 @@ function GlobalCategoryForm({
   const [icon, setIcon] = useState(category?.icon ?? "");
   const [categoryType, setCategoryType] = useState<CategoryType>(category?.category_type ?? "standard");
   const [parentCategoryId, setParentCategoryId] = useState(category?.parent_category_id ?? "");
+  const [city, setCity] = useState(category?.city ?? "");
   const [isActive, setIsActive] = useState(category?.is_active ?? true);
+  // A child's city always matches its parent's — don't ask twice.
+  const parent = parentOptions.find((p) => p.id === parentCategoryId);
+  const effectiveCity = parent ? parent.city : city;
   const [translations, setTranslations] = useState<Partial<Record<LanguageCode, TranslationValue>>>({});
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -241,6 +248,10 @@ function GlobalCategoryForm({
       setError(`A name in the default language (${DEFAULT_LOCALE.toUpperCase()}) is required.`);
       return;
     }
+    if (!effectiveCity?.trim()) {
+      setError("A city is required for a shared category.");
+      return;
+    }
     setBusy(true);
     setError(null);
 
@@ -248,6 +259,7 @@ function GlobalCategoryForm({
       icon: icon.trim() || null,
       category_type: categoryType,
       parent_category_id: parentCategoryId || null,
+      city: effectiveCity.trim(),
       is_active: isActive,
     };
     let categoryId = category?.id;
@@ -274,7 +286,14 @@ function GlobalCategoryForm({
 
     const rows = Object.entries(translations)
       .filter(([, v]) => v?.name?.trim())
-      .map(([locale, v]) => ({ category_id: categoryId, hotel_id: null, locale, name: v!.name.trim(), description: v!.description?.trim() || null }));
+      .map(([locale, v]) => ({
+        category_id: categoryId,
+        hotel_id: null,
+        city: effectiveCity.trim(),
+        locale,
+        name: v!.name.trim(),
+        description: v!.description?.trim() || null,
+      }));
     if (rows.length > 0) {
       const { error: translationError } = await supabase.from("service_category_translations").upsert(rows, { onConflict: "category_id,locale" });
       if (translationError) {
@@ -304,10 +323,17 @@ function GlobalCategoryForm({
           <option value="">(top-level — shown directly on the home screen)</option>
           {parentOptions.map((c) => (
             <option key={c.id} value={c.id}>
-              {c.displayName}
+              {c.displayName} ({c.city})
             </option>
           ))}
         </select>
+      </FormField>
+      <FormField label="City">
+        {parent ? (
+          <input style={textInput} value={parent.city ?? ""} disabled readOnly />
+        ) : (
+          <input style={textInput} value={city} onChange={(e) => setCity(e.target.value)} placeholder="e.g. Dubai — must match the hotel's own city" />
+        )}
       </FormField>
       <FormField label="Status">
         <label style={{ display: "flex", alignItems: "center", gap: "var(--ra-space-2)" }}>
@@ -438,6 +464,7 @@ function GlobalServicesPanel({ category }: { category: GlobalCategory }) {
         <GlobalServiceForm
           service={editingService === "new" ? null : editingService}
           categoryId={category.id}
+          city={category.city}
           nextSortOrder={services.length}
           onClose={() => setEditingService(null)}
           onSaved={async () => {
@@ -453,12 +480,14 @@ function GlobalServicesPanel({ category }: { category: GlobalCategory }) {
 function GlobalServiceForm({
   service,
   categoryId,
+  city,
   nextSortOrder,
   onClose,
   onSaved,
 }: {
   service: GlobalService | null;
   categoryId: string;
+  city: string | null;
   nextSortOrder: number;
   onClose: () => void;
   onSaved: () => void;
@@ -520,7 +549,7 @@ function GlobalServiceForm({
     } else {
       const { data, error: insertError } = await supabase
         .from("services")
-        .insert({ hotel_id: null, category_id: categoryId, department_id: null, ...payload, sort_order: nextSortOrder })
+        .insert({ hotel_id: null, category_id: categoryId, department_id: null, city, ...payload, sort_order: nextSortOrder })
         .select("id")
         .single();
       if (insertError || !data) {
@@ -533,7 +562,7 @@ function GlobalServiceForm({
 
     const rows = Object.entries(translations)
       .filter(([, v]) => v?.name?.trim())
-      .map(([locale, v]) => ({ service_id: serviceId, hotel_id: null, locale, name: v!.name.trim(), description: v!.description?.trim() || null }));
+      .map(([locale, v]) => ({ service_id: serviceId, hotel_id: null, city, locale, name: v!.name.trim(), description: v!.description?.trim() || null }));
     if (rows.length > 0) {
       const { error: translationError } = await supabase.from("service_translations").upsert(rows, { onConflict: "service_id,locale" });
       if (translationError) {
@@ -618,7 +647,7 @@ function useGlobalMenuCategories(shopCategoryId: string) {
 
   const reload = useCallback(async () => {
     const [{ data: rows }, { data: translationRows }] = await Promise.all([
-      supabase.from("menu_categories").select("id, is_active, sort_order").eq("service_category_id", shopCategoryId).order("sort_order"),
+      supabase.from("menu_categories").select("id, city, is_active, sort_order").eq("service_category_id", shopCategoryId).order("sort_order"),
       supabase.from("menu_category_translations").select("menu_category_id, locale, name").is("hotel_id", null),
     ]);
     const names = new Map((translationRows ?? []).filter((t) => t.locale === DEFAULT_LOCALE).map((t) => [t.menu_category_id, t.name]));
@@ -633,7 +662,7 @@ function useGlobalMenuCategories(shopCategoryId: string) {
   return { categories, loading, reload };
 }
 
-function GlobalMenuPanel({ shopCategoryId }: { shopCategoryId: string }) {
+function GlobalMenuPanel({ shopCategoryId, city }: { shopCategoryId: string; city: string | null }) {
   const { categories, loading, reload } = useGlobalMenuCategories(shopCategoryId);
   const [editingCategory, setEditingCategory] = useState<GlobalMenuCategory | "new" | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<GlobalMenuCategory | null>(null);
@@ -724,6 +753,7 @@ function GlobalMenuPanel({ shopCategoryId }: { shopCategoryId: string }) {
         <GlobalMenuCategoryForm
           category={editingCategory === "new" ? null : editingCategory}
           shopCategoryId={shopCategoryId}
+          city={city}
           nextSortOrder={categories.length}
           onClose={() => setEditingCategory(null)}
           onSaved={async () => {
@@ -739,12 +769,14 @@ function GlobalMenuPanel({ shopCategoryId }: { shopCategoryId: string }) {
 function GlobalMenuCategoryForm({
   category,
   shopCategoryId,
+  city,
   nextSortOrder,
   onClose,
   onSaved,
 }: {
   category: GlobalMenuCategory | null;
   shopCategoryId: string;
+  city: string | null;
   nextSortOrder: number;
   onClose: () => void;
   onSaved: () => void;
@@ -787,7 +819,7 @@ function GlobalMenuCategoryForm({
     } else {
       const { data, error: insertError } = await supabase
         .from("menu_categories")
-        .insert({ hotel_id: null, service_category_id: shopCategoryId, is_active: isActive, sort_order: nextSortOrder })
+        .insert({ hotel_id: null, service_category_id: shopCategoryId, city, is_active: isActive, sort_order: nextSortOrder })
         .select("id")
         .single();
       if (insertError || !data) {
@@ -800,7 +832,7 @@ function GlobalMenuCategoryForm({
 
     const rows = Object.entries(translations)
       .filter(([, v]) => v?.name?.trim())
-      .map(([locale, v]) => ({ menu_category_id: categoryId, hotel_id: null, locale, name: v!.name.trim() }));
+      .map(([locale, v]) => ({ menu_category_id: categoryId, hotel_id: null, city, locale, name: v!.name.trim() }));
     if (rows.length > 0) {
       const { error: translationError } = await supabase
         .from("menu_category_translations")
@@ -946,6 +978,7 @@ function GlobalMenuItemsPanel({ category }: { category: GlobalMenuCategory }) {
         <GlobalMenuItemForm
           item={editingItem === "new" ? null : editingItem}
           categoryId={category.id}
+          city={category.city}
           nextSortOrder={items.length}
           onClose={() => setEditingItem(null)}
           onSaved={async () => {
@@ -961,12 +994,14 @@ function GlobalMenuItemsPanel({ category }: { category: GlobalMenuCategory }) {
 function GlobalMenuItemForm({
   item,
   categoryId,
+  city,
   nextSortOrder,
   onClose,
   onSaved,
 }: {
   item: GlobalMenuItem | null;
   categoryId: string;
+  city: string | null;
   nextSortOrder: number;
   onClose: () => void;
   onSaved: () => void;
@@ -1026,7 +1061,7 @@ function GlobalMenuItemForm({
     } else {
       const { data, error: insertError } = await supabase
         .from("menu_items")
-        .insert({ hotel_id: null, menu_category_id: categoryId, ...payload, sort_order: nextSortOrder })
+        .insert({ hotel_id: null, menu_category_id: categoryId, city, ...payload, sort_order: nextSortOrder })
         .select("id")
         .single();
       if (insertError || !data) {
@@ -1039,7 +1074,7 @@ function GlobalMenuItemForm({
 
     const rows = Object.entries(translations)
       .filter(([, v]) => v?.name?.trim())
-      .map(([locale, v]) => ({ menu_item_id: itemId, hotel_id: null, locale, name: v!.name.trim(), description: v!.description?.trim() || null }));
+      .map(([locale, v]) => ({ menu_item_id: itemId, hotel_id: null, city, locale, name: v!.name.trim(), description: v!.description?.trim() || null }));
     if (rows.length > 0) {
       const { error: translationError } = await supabase.from("menu_item_translations").upsert(rows, { onConflict: "menu_item_id,locale" });
       if (translationError) {
