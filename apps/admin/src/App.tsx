@@ -5,6 +5,7 @@ import AdminLayout, { RootRedirect } from "./components/AdminLayout";
 import RequireCapability from "./components/RequireCapability";
 import { PlatformAuthProvider } from "./platform/PlatformAuthContext";
 import PlatformAnalyticsScreen from "./platform/PlatformAnalyticsScreen";
+import PlatformCatalogScreen from "./platform/PlatformCatalogScreen";
 import PlatformHotelDetailScreen from "./platform/PlatformHotelDetailScreen";
 import PlatformHotelsScreen from "./platform/PlatformHotelsScreen";
 import PlatformLayout from "./platform/PlatformLayout";
@@ -19,6 +20,7 @@ import MenuScreen from "./screens/MenuScreen";
 import RequestsScreen from "./screens/RequestsScreen";
 import RoomsScreen from "./screens/RoomsScreen";
 import ServicesScreen from "./screens/ServicesScreen";
+import SettingsScreen from "./screens/SettingsScreen";
 import StaffScreen from "./screens/StaffScreen";
 
 export default function App() {
@@ -36,6 +38,7 @@ export default function App() {
             <Route path="/menu" element={<MenuScreen />} />
             <Route path="/departments" element={<DepartmentsScreen />} />
             <Route path="/rooms" element={<RoomsScreen />} />
+            <Route path="/settings" element={<SettingsScreen />} />
             <Route
               path="/staff"
               element={
@@ -81,6 +84,7 @@ export default function App() {
             <Route index element={<Navigate to="hotels" replace />} />
             <Route path="hotels" element={<PlatformHotelsScreen />} />
             <Route path="hotels/:hotelId" element={<PlatformHotelDetailScreen />} />
+            <Route path="catalog" element={<PlatformCatalogScreen />} />
             <Route path="analytics" element={<PlatformAnalyticsScreen />} />
           </Route>
 

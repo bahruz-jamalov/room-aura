@@ -16,7 +16,7 @@ class RequestsService {
     required String roomId,
     required String guestSessionId,
     required String serviceId,
-    required String departmentId,
+    required String? departmentId,
     required int quantity,
     String? guestNote,
     DateTime? requestedFor,
@@ -29,7 +29,7 @@ class RequestsService {
           'guest_session_id': guestSessionId,
           'kind': 'service',
           'service_id': serviceId,
-          'department_id': departmentId,
+          'department_id': departmentId ?? await _resolveCityServicesDepartmentId(hotelId),
           'quantity': quantity,
           'guest_note': guestNote,
           'requested_for': requestedFor?.toIso8601String(),
@@ -37,6 +37,18 @@ class RequestsService {
         .select('id')
         .single();
     return row['id'] as String;
+  }
+
+  /// A global "Explore the City" service has no department of its own — see
+  /// 00000000000029_global_catalog.sql — so it routes through whichever
+  /// department THIS hotel has configured to handle those bookings.
+  Future<String> _resolveCityServicesDepartmentId(String hotelId) async {
+    final row = await _client.from('hotel_settings').select('city_services_department_id').eq('hotel_id', hotelId).single();
+    final departmentId = row['city_services_department_id'] as String?;
+    if (departmentId == null) {
+      throw Exception('This hotel has not configured a department for Explore the City bookings yet.');
+    }
+    return departmentId;
   }
 
   Future<void> cancelRequest(String requestId) async {

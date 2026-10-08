@@ -6,7 +6,9 @@ import '../catalogue/catalogue_service.dart';
 import 'menu_items_screen.dart';
 
 class MenuCategoriesScreen extends StatefulWidget {
-  const MenuCategoriesScreen({super.key});
+  const MenuCategoriesScreen({super.key, required this.category});
+
+  final ServiceCategory category;
 
   @override
   State<MenuCategoriesScreen> createState() => _MenuCategoriesScreenState();
@@ -14,13 +16,16 @@ class MenuCategoriesScreen extends StatefulWidget {
 
 class _MenuCategoriesScreenState extends State<MenuCategoriesScreen> {
   late final _catalogueService = CatalogueService(Supabase.instance.client);
-  late final Future<List<MenuCategory>> _categoriesFuture =
-      _catalogueService.fetchMenuCategories(locale: 'en', fallbackLocale: 'en');
+  late final Future<List<MenuCategory>> _categoriesFuture = _catalogueService.fetchMenuCategories(
+    serviceCategoryId: widget.category.id,
+    locale: 'en',
+    fallbackLocale: 'en',
+  );
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Food & Drink')),
+      appBar: AppBar(title: Text(widget.category.name)),
       body: SafeArea(
         child: FutureBuilder<List<MenuCategory>>(
           future: _categoriesFuture,

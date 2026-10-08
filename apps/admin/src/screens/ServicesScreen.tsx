@@ -12,6 +12,7 @@ import { useHotel } from "../hooks/useHotel";
 import { useServiceCategoriesAdmin, type AdminServiceCategory } from "../hooks/useServiceCategoriesAdmin";
 import { useServicesAdmin, type AdminService } from "../hooks/useServicesAdmin";
 import { card, dangerButton, primaryButton, secondaryButton, selectInput, textInput } from "../lib/styles";
+import { MenuCategoriesPanel } from "./MenuScreen";
 import { supabase } from "../supabase";
 
 export default function ServicesScreen() {
@@ -63,7 +64,7 @@ export default function ServicesScreen() {
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "var(--ra-text-sm)" }}>
           <thead>
             <tr style={{ textAlign: "left", background: "var(--ra-color-surface-sunken)" }}>
-              {["Icon", "Name", "Type", "Status", ""].map((h) => (
+              {["Icon", "Name", "Type", "Parent", "Status", ""].map((h) => (
                 <th key={h} style={{ padding: "var(--ra-space-3)", fontWeight: 600 }}>
                   {h}
                 </th>
@@ -73,13 +74,13 @@ export default function ServicesScreen() {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={5} style={{ padding: "var(--ra-space-4)", color: "var(--ra-color-text-secondary)" }}>
+                <td colSpan={6} style={{ padding: "var(--ra-space-4)", color: "var(--ra-color-text-secondary)" }}>
                   Loading…
                 </td>
               </tr>
             ) : categories.length === 0 ? (
               <tr>
-                <td colSpan={5} style={{ padding: "var(--ra-space-4)", color: "var(--ra-color-text-secondary)" }}>
+                <td colSpan={6} style={{ padding: "var(--ra-space-4)", color: "var(--ra-color-text-secondary)" }}>
                   No categories yet.
                 </td>
               </tr>
@@ -97,6 +98,9 @@ export default function ServicesScreen() {
                   <td style={{ padding: "var(--ra-space-3)" }}>{c.icon ?? "—"}</td>
                   <td style={{ padding: "var(--ra-space-3)", fontWeight: 600 }}>{c.displayName}</td>
                   <td style={{ padding: "var(--ra-space-3)", color: "var(--ra-color-text-secondary)" }}>{c.category_type}</td>
+                  <td style={{ padding: "var(--ra-space-3)", color: "var(--ra-color-text-secondary)" }}>
+                    {c.parent_category_id ? categories.find((p) => p.id === c.parent_category_id)?.displayName ?? "—" : "—"}
+                  </td>
                   <td style={{ padding: "var(--ra-space-3)" }}>{c.is_active ? "Active" : "Inactive"}</td>
                   <td style={{ padding: "var(--ra-space-3)", textAlign: "right", whiteSpace: "nowrap" }} onClick={(e) => e.stopPropagation()}>
                     {canEdit && (
@@ -117,13 +121,21 @@ export default function ServicesScreen() {
         </table>
       </div>
 
-      {selectedCategory && hotel && <ServicesForCategory category={selectedCategory} hotel={hotel} canEdit={canEdit} />}
+      {selectedCategory && hotel && selectedCategory.category_type === "menu" && (
+        // key: force a remount per shop, so its internal "which menu
+        // category is selected" state doesn't leak from the previous shop.
+        <MenuCategoriesPanel key={selectedCategory.id} shopCategory={selectedCategory} hotel={hotel} canEdit={canEdit} />
+      )}
+      {selectedCategory && hotel && selectedCategory.category_type === "standard" && (
+        <ServicesForCategory category={selectedCategory} hotel={hotel} canEdit={canEdit} />
+      )}
 
       {editingCategory && staff && hotel && (
         <CategoryForm
           category={editingCategory === "new" ? null : editingCategory}
           hotelId={staff.hotelId}
           hotel={hotel}
+          parentOptions={categories.filter((c) => c.parent_category_id === null && c.id !== (editingCategory === "new" ? null : editingCategory.id))}
           nextSortOrder={categories.length}
           onClose={() => setEditingCategory(null)}
           onSaved={async () => {
@@ -251,6 +263,7 @@ function CategoryForm({
   category,
   hotelId,
   hotel,
+  parentOptions,
   nextSortOrder,
   onClose,
   onSaved,
@@ -258,16 +271,21 @@ function CategoryForm({
   category: AdminServiceCategory | null;
   hotelId: string;
   hotel: { defaultLocale: LanguageCode; supportedLocales: LanguageCode[] };
+  parentOptions: AdminServiceCategory[];
   nextSortOrder: number;
   onClose: () => void;
   onSaved: () => void;
 }) {
   const [icon, setIcon] = useState(category?.icon ?? "");
   const [categoryType, setCategoryType] = useState<"standard" | "menu">(category?.category_type ?? "standard");
+  const [departmentId, setDepartmentId] = useState(category?.department_id ?? "");
+  const [allowsRoomCharge, setAllowsRoomCharge] = useState(category?.allows_room_charge ?? true);
+  const [parentCategoryId, setParentCategoryId] = useState(category?.parent_category_id ?? "");
   const [isActive, setIsActive] = useState(category?.is_active ?? true);
   const [translations, setTranslations] = useState<Partial<Record<LanguageCode, TranslationValue>>>({});
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const departments = useDepartments();
 
   useEffect(() => {
     if (!category) return;
@@ -291,7 +309,14 @@ function CategoryForm({
     setBusy(true);
     setError(null);
 
-    const payload = { icon: icon.trim() || null, category_type: categoryType, is_active: isActive };
+    const payload = {
+      icon: icon.trim() || null,
+      category_type: categoryType,
+      department_id: categoryType === "menu" ? departmentId || null : null,
+      allows_room_charge: categoryType === "menu" ? allowsRoomCharge : true,
+      parent_category_id: parentCategoryId || null,
+      is_active: isActive,
+    };
     let categoryId = category?.id;
     if (category) {
       const { error: updateError } = await supabase.from("service_categories").update(payload).eq("id", category.id);
@@ -338,7 +363,37 @@ function CategoryForm({
       <FormField label="Type">
         <select style={selectInput} value={categoryType} onChange={(e) => setCategoryType(e.target.value as "standard" | "menu")}>
           <option value="standard">Standard (service category)</option>
-          <option value="menu">Menu tile (links to Food &amp; Drinks)</option>
+          <option value="menu">Menu / shop (orderable items, e.g. Food &amp; Drinks or a City Shop)</option>
+        </select>
+      </FormField>
+      {categoryType === "menu" && (
+        <FormField label="Fulfilling department">
+          <select style={selectInput} value={departmentId} onChange={(e) => setDepartmentId(e.target.value)}>
+            <option value="">(use the hotel's default Food &amp; Beverage department)</option>
+            {departments.map((d) => (
+              <option key={d.id} value={d.id}>
+                {d.name}
+              </option>
+            ))}
+          </select>
+        </FormField>
+      )}
+      {categoryType === "menu" && (
+        <FormField label="Payment">
+          <label style={{ display: "flex", alignItems: "center", gap: "var(--ra-space-2)" }}>
+            <input type="checkbox" checked={allowsRoomCharge} onChange={(e) => setAllowsRoomCharge(e.target.checked)} />
+            Guest can charge to room (turn off for an external shop/restaurant with no hotel folio)
+          </label>
+        </FormField>
+      )}
+      <FormField label="Parent category (optional)">
+        <select style={selectInput} value={parentCategoryId} onChange={(e) => setParentCategoryId(e.target.value)}>
+          <option value="">(top-level — shown directly on the home screen)</option>
+          {parentOptions.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.displayName}
+            </option>
+          ))}
         </select>
       </FormField>
       <FormField label="Status">

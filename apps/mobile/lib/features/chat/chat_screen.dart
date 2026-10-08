@@ -5,6 +5,7 @@ import '../../theme/tokens.dart';
 import '../catalogue/catalogue_models.dart';
 import '../catalogue/catalogue_service.dart';
 import '../connect/hotel_session_holder.dart';
+import '../home/category_group_screen.dart';
 import '../menu/menu_categories_screen.dart';
 import '../services/service_category_screen.dart';
 import 'chat_models.dart';
@@ -100,7 +101,11 @@ class _ChatScreenState extends State<ChatScreen> {
     Navigator.of(context).pop();
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => category.isMenu ? const MenuCategoriesScreen() : ServiceCategoryScreen(category: category),
+        builder: (_) => category.hasChildren
+            ? CategoryGroupScreen(category: category)
+            : category.isMenu
+                ? MenuCategoriesScreen(category: category)
+                : ServiceCategoryScreen(category: category),
       ),
     );
   }

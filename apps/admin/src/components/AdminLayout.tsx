@@ -31,7 +31,7 @@ const NAV_ITEMS = [
   { to: "/feedback", label: "Feedback", enabled: true, visible: (s: StaffProfile) => permissions.canViewFeedback(s) },
   { to: "/analytics", label: "Analytics", enabled: true, visible: (s: StaffProfile) => permissions.canViewAnalytics(s) },
   { to: "/access", label: "QR / Access", enabled: true, visible: (s: StaffProfile) => permissions.canManageAccessTokens(s) },
-  { to: "/settings", label: "Settings", enabled: false, visible: () => true },
+  { to: "/settings", label: "Settings", enabled: true, visible: () => true },
 ] as const;
 
 export default function AdminLayout() {

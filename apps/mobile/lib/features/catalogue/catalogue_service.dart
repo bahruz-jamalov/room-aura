@@ -10,15 +10,16 @@ class CatalogueService {
 
   final SupabaseClient _client;
 
+  /// [parentCategoryId] null fetches top-level categories (the Home grid);
+  /// a specific id fetches that group's children (see CategoryGroupScreen).
   Future<List<ServiceCategory>> fetchCategories({
+    String? parentCategoryId,
     required String locale,
     required String fallbackLocale,
   }) async {
-    final rows = await _client
-        .from('service_categories')
-        .select('id, category_type, icon, image_url, sort_order')
-        .eq('is_active', true)
-        .order('sort_order', ascending: true);
+    var query = _client.from('service_categories').select('id, category_type, icon, image_url, sort_order').eq('is_active', true);
+    query = parentCategoryId == null ? query.isFilter('parent_category_id', null) : query.eq('parent_category_id', parentCategoryId);
+    final rows = await query.order('sort_order', ascending: true);
     final ids = rows.map((r) => r['id'] as String).toList();
     if (ids.isEmpty) return [];
 
@@ -26,6 +27,11 @@ class CatalogueService {
         .from('service_category_translations')
         .select('category_id, locale, name, description')
         .inFilter('category_id', ids);
+
+    // A category "has children" (is a group tile, e.g. "Explore the City")
+    // when something else points at it as a parent — derived, not stored.
+    final childRows = await _client.from('service_categories').select('parent_category_id').inFilter('parent_category_id', ids).eq('is_active', true);
+    final idsWithChildren = childRows.map((r) => r['parent_category_id'] as String).toSet();
 
     return rows.map((row) {
       final id = row['id'] as String;
@@ -38,6 +44,7 @@ class CatalogueService {
         imageUrl: row['image_url'] as String?,
         name: resolved?['name'] as String? ?? 'Untitled',
         description: resolved?['description'] as String?,
+        hasChildren: idsWithChildren.contains(id),
       );
     }).toList();
   }
@@ -69,7 +76,7 @@ class CatalogueService {
       final resolved = resolveTranslation(matches, (t) => t['locale'] as String, locale, fallbackLocale);
       return ServiceItem(
         id: id,
-        departmentId: row['department_id'] as String,
+        departmentId: row['department_id'] as String?,
         imageUrl: row['image_url'] as String?,
         isFree: row['is_free'] as bool,
         priceMinor: row['price_minor'] as int,
@@ -86,12 +93,14 @@ class CatalogueService {
   }
 
   Future<List<MenuCategory>> fetchMenuCategories({
+    required String serviceCategoryId,
     required String locale,
     required String fallbackLocale,
   }) async {
     final rows = await _client
         .from('menu_categories')
         .select('id, sort_order')
+        .eq('service_category_id', serviceCategoryId)
         .eq('is_active', true)
         .order('sort_order', ascending: true);
     final ids = rows.map((r) => r['id'] as String).toList();
@@ -102,11 +111,16 @@ class CatalogueService {
         .select('menu_category_id, locale, name')
         .inFilter('menu_category_id', ids);
 
+    // A property of the shop (service_categories), shared by every category
+    // in it — see 00000000000028_shop_room_charge.sql.
+    final shop = await _client.from('service_categories').select('allows_room_charge').eq('id', serviceCategoryId).single();
+    final allowsRoomCharge = shop['allows_room_charge'] as bool;
+
     return rows.map((row) {
       final id = row['id'] as String;
       final matches = translations.where((t) => t['menu_category_id'] == id).toList();
       final resolved = resolveTranslation(matches, (t) => t['locale'] as String, locale, fallbackLocale);
-      return MenuCategory(id: id, name: resolved?['name'] as String? ?? 'Untitled');
+      return MenuCategory(id: id, name: resolved?['name'] as String? ?? 'Untitled', allowsRoomCharge: allowsRoomCharge);
     }).toList();
   }
 

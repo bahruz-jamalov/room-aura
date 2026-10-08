@@ -7,6 +7,7 @@ import '../connect/hotel_session.dart';
 import '../menu/menu_categories_screen.dart';
 import '../requests/other_request_screen.dart';
 import '../services/service_category_screen.dart';
+import 'category_group_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, required this.hotelSession});
@@ -120,9 +121,11 @@ class _CategoryCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(RaRadius.card),
         onTap: () => Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (_) => category.isMenu
-                ? const MenuCategoriesScreen()
-                : ServiceCategoryScreen(category: category),
+            builder: (_) => category.hasChildren
+                ? CategoryGroupScreen(category: category)
+                : category.isMenu
+                    ? MenuCategoriesScreen(category: category)
+                    : ServiceCategoryScreen(category: category),
           ),
         ),
         child: Container(

@@ -1,6 +1,9 @@
-// /menu — menu categories & items, Available / Sold Out / Hidden
-// (docs/ARCHITECTURE.md section 6). Same visibility rule as /services:
-// everyone can see the menu, only admin/manager can edit it.
+// /menu — the hotel's own Food & Drinks shop (the first 'menu'-type
+// service_categories row). Any OTHER shop (e.g. a City Shop under "Explore
+// the City") is managed from /services instead, by selecting its category —
+// see ServicesScreen.tsx, which renders the same MenuCategoriesPanel below.
+// Same visibility rule as /services: everyone can see the menu, only
+// admin/manager can edit it.
 import { useEffect, useState } from "react";
 import { permissions, type LanguageCode, type MenuItemStatus } from "@room-aura/shared";
 import { useAuth } from "../auth/AuthContext";
@@ -9,6 +12,8 @@ import TranslationEditor, { type TranslationValue } from "../components/Translat
 import { useHotel } from "../hooks/useHotel";
 import { useMenuCategoriesAdmin, type AdminMenuCategory } from "../hooks/useMenuCategoriesAdmin";
 import { useMenuItemsAdmin, type AdminMenuItem } from "../hooks/useMenuItemsAdmin";
+import type { AdminServiceCategory } from "../hooks/useServiceCategoriesAdmin";
+import { useServiceCategoriesAdmin } from "../hooks/useServiceCategoriesAdmin";
 import { card, dangerButton, primaryButton, secondaryButton, selectInput, textInput } from "../lib/styles";
 import { supabase } from "../supabase";
 
@@ -19,10 +24,47 @@ const STATUS_LABELS: Record<MenuItemStatus, string> = {
 };
 
 export default function MenuScreen() {
-  const { staff } = useAuth();
   const hotel = useHotel();
+  const { categories: shopCategories, loading } = useServiceCategoriesAdmin(hotel?.defaultLocale ?? null);
+  const { staff } = useAuth();
   const canEdit = staff ? permissions.canManageCatalogue(staff) : false;
-  const { categories, loading, reload } = useMenuCategoriesAdmin(hotel?.defaultLocale ?? null);
+
+  const foodAndDrinks = shopCategories.filter((c) => c.category_type === "menu").sort((a, b) => a.sort_order - b.sort_order)[0];
+
+  if (loading || !hotel) {
+    return <p style={{ color: "var(--ra-color-text-secondary)" }}>Loading…</p>;
+  }
+  if (!foodAndDrinks) {
+    return (
+      <p style={{ color: "var(--ra-color-text-secondary)" }}>
+        No Food &amp; Drinks category yet — create a "Menu tile" category under Services first.
+      </p>
+    );
+  }
+
+  return (
+    <div>
+      <h1 style={{ fontSize: "var(--ra-text-2xl)", marginTop: 0 }}>{foodAndDrinks.displayName}</h1>
+      <MenuCategoriesPanel shopCategory={foodAndDrinks} hotel={hotel} canEdit={canEdit} />
+    </div>
+  );
+}
+
+/** The menu-categories table + items editor for one shop (one 'menu'-type
+ *  service_categories row). Used standalone by MenuScreen above (for the
+ *  hotel's own Food & Drinks) and embedded in ServicesScreen (for every
+ *  other shop) — see 00000000000027_multi_shop_menus.sql for why a shop's
+ *  menu_categories are scoped to it rather than one flat hotel-wide list. */
+export function MenuCategoriesPanel({
+  shopCategory,
+  hotel,
+  canEdit,
+}: {
+  shopCategory: AdminServiceCategory;
+  hotel: { id: string; defaultLocale: LanguageCode; supportedLocales: LanguageCode[]; currency: string };
+  canEdit: boolean;
+}) {
+  const { categories, loading, reload } = useMenuCategoriesAdmin(hotel.defaultLocale, shopCategory.id);
   const [editingCategory, setEditingCategory] = useState<AdminMenuCategory | "new" | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<AdminMenuCategory | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -43,8 +85,6 @@ export default function MenuScreen() {
 
   return (
     <div>
-      <h1 style={{ fontSize: "var(--ra-text-2xl)", marginTop: 0 }}>Food &amp; Drinks</h1>
-
       {error && (
         <div style={{ ...card, padding: "var(--ra-space-3) var(--ra-space-4)", marginBottom: "var(--ra-space-4)", color: "var(--ra-color-danger)" }}>
           {error}
@@ -116,12 +156,13 @@ export default function MenuScreen() {
         </table>
       </div>
 
-      {selectedCategory && hotel && <ItemsForCategory category={selectedCategory} hotel={hotel} canEdit={canEdit} />}
+      {selectedCategory && <ItemsForCategory category={selectedCategory} hotel={hotel} canEdit={canEdit} />}
 
-      {editingCategory && staff && hotel && (
+      {editingCategory && (
         <MenuCategoryForm
           category={editingCategory === "new" ? null : editingCategory}
-          hotelId={staff.hotelId}
+          hotelId={hotel.id}
+          shopCategoryId={shopCategory.id}
           hotel={hotel}
           nextSortOrder={categories.length}
           onClose={() => setEditingCategory(null)}
@@ -253,6 +294,7 @@ function ItemsForCategory({
 function MenuCategoryForm({
   category,
   hotelId,
+  shopCategoryId,
   hotel,
   nextSortOrder,
   onClose,
@@ -260,6 +302,7 @@ function MenuCategoryForm({
 }: {
   category: AdminMenuCategory | null;
   hotelId: string;
+  shopCategoryId: string;
   hotel: { defaultLocale: LanguageCode; supportedLocales: LanguageCode[] };
   nextSortOrder: number;
   onClose: () => void;
@@ -303,7 +346,7 @@ function MenuCategoryForm({
     } else {
       const { data, error: insertError } = await supabase
         .from("menu_categories")
-        .insert({ hotel_id: hotelId, is_active: isActive, sort_order: nextSortOrder })
+        .insert({ hotel_id: hotelId, service_category_id: shopCategoryId, is_active: isActive, sort_order: nextSortOrder })
         .select("id")
         .single();
       if (insertError || !data) {

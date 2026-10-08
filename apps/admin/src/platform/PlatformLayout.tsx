@@ -6,6 +6,7 @@ import PlatformLoginScreen from "./PlatformLoginScreen";
 
 const NAV_ITEMS = [
   { to: "/platform/hotels", label: "Hotels" },
+  { to: "/platform/catalog", label: "Explore the City" },
   { to: "/platform/analytics", label: "Analytics" },
 ] as const;
 

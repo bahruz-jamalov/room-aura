@@ -43,7 +43,8 @@ class _MenuItemsScreenState extends State<MenuItemsScreen> {
               ),
               itemCount: items.length,
               separatorBuilder: (_, _) => const SizedBox(height: RaSpace.s3),
-              itemBuilder: (context, index) => _MenuItemCard(item: items[index], cart: cart),
+              itemBuilder: (context, index) =>
+                  _MenuItemCard(item: items[index], cart: cart, allowsRoomCharge: widget.category.allowsRoomCharge),
             );
           },
         ),
@@ -64,10 +65,11 @@ class _MenuItemsScreenState extends State<MenuItemsScreen> {
 }
 
 class _MenuItemCard extends StatelessWidget {
-  const _MenuItemCard({required this.item, required this.cart});
+  const _MenuItemCard({required this.item, required this.cart, required this.allowsRoomCharge});
 
   final MenuItem item;
   final Cart cart;
+  final bool allowsRoomCharge;
 
   @override
   Widget build(BuildContext context) {
@@ -100,9 +102,12 @@ class _MenuItemCard extends StatelessWidget {
             const Text('Sold out', style: TextStyle(color: RaColors.textSecondary, fontSize: RaText.sm))
           else
             FilledButton(
-              onPressed: () => cart.addItem(
-                CartItem(menuItemId: item.id, name: item.name, priceMinor: item.priceMinor, currency: item.currency, quantity: 0),
-              ),
+              onPressed: () {
+                cart.setAllowsRoomCharge(allowsRoomCharge);
+                cart.addItem(
+                  CartItem(menuItemId: item.id, name: item.name, priceMinor: item.priceMinor, currency: item.currency, quantity: 0),
+                );
+              },
               child: const Text('Add'),
             ),
         ],

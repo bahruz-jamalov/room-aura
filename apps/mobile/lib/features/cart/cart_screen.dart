@@ -59,6 +59,11 @@ class _CartScreenState extends State<CartScreen> {
         body: const Center(child: Text('—', style: TextStyle(color: RaColors.textSecondary))),
       );
     }
+    if (!cart.allowsRoomCharge && _paymentMethod == 'charge_to_room') {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) setState(() => _paymentMethod = 'pay_at_hotel');
+      });
+    }
     final currency = cart.items.first.currency;
     return Scaffold(
       appBar: AppBar(title: const Text('Cart')),
@@ -109,17 +114,28 @@ class _CartScreenState extends State<CartScreen> {
               decoration: const InputDecoration(labelText: 'Note (optional)'),
             ),
             const SizedBox(height: RaSpace.s4),
-            const Text('Payment method', style: TextStyle(fontWeight: FontWeight.w600)),
-            RadioGroup<String>(
-              groupValue: _paymentMethod,
-              onChanged: (v) => setState(() => _paymentMethod = v!),
-              child: const Column(
-                children: [
-                  RadioListTile<String>(value: 'charge_to_room', title: Text('Charge to room'), contentPadding: EdgeInsets.zero),
-                  RadioListTile<String>(value: 'pay_at_hotel', title: Text('Pay at hotel'), contentPadding: EdgeInsets.zero),
-                ],
+            // An external "Explore the City" shop isn't billed through the
+            // hotel at all — neither "charge to room" nor "pay at hotel"
+            // applies, so there's nothing to ask the guest to choose.
+            // _paymentMethod still carries 'pay_at_hotel' under the hood
+            // (the DB column is required and has no third value for this).
+            if (cart.allowsRoomCharge) ...[
+              const Text('Payment method', style: TextStyle(fontWeight: FontWeight.w600)),
+              RadioGroup<String>(
+                groupValue: _paymentMethod,
+                onChanged: (v) => setState(() => _paymentMethod = v!),
+                child: const Column(
+                  children: [
+                    RadioListTile<String>(value: 'charge_to_room', title: Text('Charge to room'), contentPadding: EdgeInsets.zero),
+                    RadioListTile<String>(value: 'pay_at_hotel', title: Text('Pay at hotel'), contentPadding: EdgeInsets.zero),
+                  ],
+                ),
               ),
-            ),
+            ] else
+              const Text(
+                "You'll pay for this directly when you collect your order.",
+                style: TextStyle(color: RaColors.textSecondary),
+              ),
             if (_errorMessage != null) ...[
               const SizedBox(height: RaSpace.s3),
               Text(_errorMessage!, style: const TextStyle(color: RaColors.danger)),

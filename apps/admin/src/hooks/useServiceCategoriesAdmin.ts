@@ -8,6 +8,9 @@ export interface AdminServiceCategory {
   icon: string | null;
   sort_order: number;
   is_active: boolean;
+  department_id: string | null;
+  parent_category_id: string | null;
+  allows_room_charge: boolean;
   displayName: string;
 }
 
@@ -20,7 +23,15 @@ export function useServiceCategoriesAdmin(defaultLocale: LanguageCode | null) {
   const reload = useCallback(async () => {
     if (!defaultLocale) return;
     const [{ data: categoryRows }, { data: translationRows }] = await Promise.all([
-      supabase.from("service_categories").select("id, category_type, icon, sort_order, is_active").order("sort_order"),
+      // Global ("Explore the City") categories are platform-managed, not
+      // this hotel's own — see /platform/catalog and
+      // 00000000000029_global_catalog.sql — so they're excluded here even
+      // though RLS would otherwise let staff read them too.
+      supabase
+        .from("service_categories")
+        .select("id, category_type, icon, sort_order, is_active, department_id, parent_category_id, allows_room_charge")
+        .not("hotel_id", "is", null)
+        .order("sort_order"),
       supabase.from("service_category_translations").select("category_id, locale, name"),
     ]);
     const names = new Map(
